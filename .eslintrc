@@ -1,0 +1,13 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+    "@typescript-eslint"
+],
+    "rules":{
+        "no-unused-vars":"error",
+        "no-undef":"error"
+    },
+    "env":{
+        "browser": true
+    }
+}

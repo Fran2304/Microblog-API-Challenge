@@ -11,10 +11,11 @@
     "eslint": "^7.27.0",
     "express": "^4.17.1",
     "prettier": "^2.3.0",
+    "prisma": "^2.24.0",
     "typescript": "^4.3.2"
   },
   "scripts": {
-    "compile":"npm run format && npm run lint && tsc",
+    "compile": "npm run format && npm run lint && tsc",
     "server": "node ./dist/server.js",
     "format": "prettier --config=\".prettierrc\" --write src/**/*.ts server.ts",
     "lint": "eslint . --ext .ts"

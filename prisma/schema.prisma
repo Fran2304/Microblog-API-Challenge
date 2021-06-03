@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int     @id @default(autoincrement())
+  email           String  @unique @db.VarChar(255)
+  nickname        String  @unique @db.VarChar(255)
+  firstName       String  @map(name: "first_name")
+  lastName        String  @map(name: "last_name")
+  visibleEmail    Boolean @default(false) @map(name: "visible_mail")
+  visibleName     Boolean @default(false) @map(name: "visible_name")
+  password        String  
+  emailVerified   Boolean @default(false) @map(name: "email_verified")
+  bio             String?
+  hashActivation  String  @db.VarChar(255)
+  post            Post[]
+  comment         Comment[]
+  postLikes       PostLikes[]
+  commentLikes    CommentLikes[]
+}
+
+model Post {
+  id            Int      @id @default(autoincrement())
+  title         String   
+  createdAt     DateTime @default(now()) @db.Timestamp(6) @map(name: "created_at")
+  content       String   @db.Text
+  published     Boolean  @default(false)
+  likesQuantity Int      @map(name: "likes_quantity")
+  authorId      Int      @map(name: "author_id")
+  user          User     @relation(fields: [authorId], references: [id])
+  comment       Comment[]
+  postLikes     PostLikes[]
+}
+
+model Comment {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now()) @db.Timestamp(6) @map(name: "created_at")
+  content       String   @db.Text
+  published     Boolean  @default(false)
+  likesQuantity Int      @map(name: "likes_quantity")
+  authorId      Int      @map(name: "author_id")
+  postId        Int      @map(name: "post_id")
+  user          User     @relation(fields: [authorId], references: [id])
+  post          Post     @relation(fields: [postId], references: [id])
+  commentLikes  CommentLikes[]
+}
+
+model PostLikes {
+  id            Int       @id @default(autoincrement()) 
+  authorId      Int       @map(name: "author_id")
+  postId        Int       @map(name: "post_id")
+  like          Boolean   @default(false)
+  user          User      @relation(fields: [authorId], references: [id])
+  post          Post      @relation(fields: [postId], references: [id])
+}
+
+model CommentLikes {
+  id            Int       @id @default(autoincrement()) 
+  authorId      Int       @map(name: "author_id")
+  commentId     Int       @map(name: "comment_id")
+  like          Boolean   @default(false)
+  user          User      @relation(fields: [authorId], references: [id])
+  comment       Comment   @relation(fields: [commentId], references: [id])
+}
+

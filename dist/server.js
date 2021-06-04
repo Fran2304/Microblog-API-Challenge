@@ -35,14 +35,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.app = void 0;
+var cors_1 = __importDefault(require("cors"));
 var express = require("express");
+var body_parser_1 = require("body-parser");
+var users_router_1 = __importDefault(require("./src/routes/users.router"));
+var posts_router_1 = __importDefault(require("./src/routes/posts.router"));
+var comments_router_1 = __importDefault(require("./src/routes/comments.router"));
+exports.app = express();
+exports.app.disable('x-powered-by');
+exports.app.use(cors_1.default());
+exports.app.use(body_parser_1.json());
+exports.app.use(body_parser_1.urlencoded({ extended: false }));
+exports.app.use('/api/accounts', users_router_1.default);
+exports.app.use('/api/accounts/:id/comments', comments_router_1.default);
+exports.app.use('/api/accounts/:id/posts', posts_router_1.default);
+// Start server
 var port = 3002;
-var app = express();
 var start = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         try {
-            app.listen(port, function () {
+            exports.app.listen(port, function () {
                 console.log("REST API on http://localhost:" + port + "/");
             });
         }
@@ -53,6 +70,3 @@ var start = function () { return __awaiter(void 0, void 0, void 0, function () {
     });
 }); };
 start();
-app.get('/', function (req, res) {
-    res.json({ message: 'Bienvenido' });
-});

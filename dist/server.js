@@ -41,12 +41,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
 var cors_1 = __importDefault(require("cors"));
-var express = require("express");
+var express_1 = __importDefault(require("express"));
 var body_parser_1 = require("body-parser");
 var users_router_1 = __importDefault(require("./src/routes/users.router"));
 var posts_router_1 = __importDefault(require("./src/routes/posts.router"));
 var comments_router_1 = __importDefault(require("./src/routes/comments.router"));
-exports.app = express();
+exports.app = express_1.default();
 exports.app.disable('x-powered-by');
 exports.app.use(cors_1.default());
 exports.app.use(body_parser_1.json());

@@ -1,12 +1,14 @@
 import { Router } from 'express'
-const controller = (req: any, res: any) => {
-    res.send({ me: 'comments' })
-}
+import * as controller from '../controllers/comment.controller'
+
 const router = Router()
 
-// /api/account
-router.route('/').get(controller).post(controller)
+router.route('/').get(controller.getComments).post(controller.postComment)
 
-// /api/account:id
-router.route('/:id').put(controller).delete(controller).get(controller)
+router
+    .route('/:id')
+    .get(controller.getComment)
+    .patch(controller.updateComment)
+    .delete(controller.deleteComment)
+
 export default router

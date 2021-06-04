@@ -1,9 +1,11 @@
 import cors from 'cors'
-import express = require('express')
+import express from 'express'
 import { json, urlencoded } from 'body-parser'
 import usersRouter from './src/routes/users.router'
 import postsRouter from './src/routes/posts.router'
 import commentsRouter from './src/routes/comments.router'
+import * as dotenv from 'dotenv';
+dotenv.config()
 
 export const app = express()
 
@@ -18,7 +20,8 @@ app.use('/api/accounts/:id/comments', commentsRouter)
 app.use('/api/accounts/:id/posts', postsRouter)
 
 // Start server
-const port = 3002
+// eslint-disable-next-line no-undef
+const port = process.env.PORT
 
 const start = async () => {
     try {

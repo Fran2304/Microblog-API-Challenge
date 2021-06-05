@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -47,19 +36,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUserService = void 0;
+exports.createService = exports.getAllComments = void 0;
 var client_1 = require("@prisma/client");
 var prisma = new client_1.PrismaClient();
-var createUserService = function (params) { return __awaiter(void 0, void 0, void 0, function () {
+// eslint-disable-next-line no-unused-vars
+var getAllComments = function (authorId) { return __awaiter(void 0, void 0, void 0, function () {
+    var authId, comments;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, prisma.user.create({
-                    data: __assign({}, params),
-                })];
+            case 0:
+                authId = Number.parseInt(authorId);
+                return [4 /*yield*/, prisma.comment.findMany({
+                        where: {
+                            authorId: authId,
+                        },
+                    })];
             case 1:
-                _a.sent();
-                return [2 /*return*/, 'created user'];
+                comments = _a.sent();
+                return [2 /*return*/, comments];
         }
     });
 }); };
-exports.createUserService = createUserService;
+exports.getAllComments = getAllComments;
+var createService = function (authorId) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, prisma.comment.create({
+                    data: {
+                        createdAt: '',
+                        content: '',
+                        likesQuantity: 0,
+                        authorId: authorId,
+                        postId: 1,
+                    },
+                })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, 'hola'];
+        }
+    });
+}); };
+exports.createService = createService;

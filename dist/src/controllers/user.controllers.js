@@ -54,41 +54,38 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.app = void 0;
-var cors_1 = __importDefault(require("cors"));
-var express_1 = __importDefault(require("express"));
-var body_parser_1 = require("body-parser");
-var users_router_1 = __importDefault(require("./src/routes/users.router"));
-var posts_router_1 = __importDefault(require("./src/routes/posts.router"));
-var comments_router_1 = __importDefault(require("./src/routes/comments.router"));
-var dotenv = __importStar(require("dotenv"));
-dotenv.config();
-exports.app = express_1.default();
-exports.app.disable('x-powered-by');
-exports.app.use(cors_1.default());
-exports.app.use(body_parser_1.json());
-exports.app.use(body_parser_1.urlencoded({ extended: false }));
-exports.app.use('/api/accounts', users_router_1.default);
-exports.app.use('/api/accounts/:id/comments', comments_router_1.default);
-exports.app.use('/api/accounts/:id/posts', posts_router_1.default);
-// Start server
-// eslint-disable-next-line no-undef
-var port = process.env.PORT;
-var start = function () { return __awaiter(void 0, void 0, void 0, function () {
+exports.updateUser = exports.getUser = exports.createUser = void 0;
+var userService = __importStar(require("../services/users/crudUserService"));
+var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, e_1;
     return __generator(this, function (_a) {
-        try {
-            exports.app.listen(port, function () {
-                console.log("REST API on http://localhost:" + port + "/");
-            });
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email || !req.body.password) {
+                    return [2 /*return*/, res.status(400).send({ message: 'need email and password' })];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, userService.createUserService(req.body)];
+            case 2:
+                user = _a.sent();
+                return [2 /*return*/, res.status(201).send({ user: user })];
+            case 3:
+                e_1 = _a.sent();
+                console.error(e_1);
+                return [2 /*return*/, res.status(400).end()];
+            case 4: return [2 /*return*/];
         }
-        catch (e) {
-            console.error(e);
-        }
-        return [2 /*return*/];
     });
 }); };
-start();
+exports.createUser = createUser;
+var getUser = function (req, res) {
+    res.status(200).json({ data: 'hola' });
+};
+exports.getUser = getUser;
+var updateUser = function (req, res) {
+    res.status(200).json({ data: 'hola' });
+};
+exports.updateUser = updateUser;

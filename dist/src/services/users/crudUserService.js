@@ -1,22 +1,14 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -54,41 +46,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.app = void 0;
-var cors_1 = __importDefault(require("cors"));
-var express_1 = __importDefault(require("express"));
-var body_parser_1 = require("body-parser");
-var users_router_1 = __importDefault(require("./src/routes/users.router"));
-var posts_router_1 = __importDefault(require("./src/routes/posts.router"));
-var comments_router_1 = __importDefault(require("./src/routes/comments.router"));
-var dotenv = __importStar(require("dotenv"));
-dotenv.config();
-exports.app = express_1.default();
-exports.app.disable('x-powered-by');
-exports.app.use(cors_1.default());
-exports.app.use(body_parser_1.json());
-exports.app.use(body_parser_1.urlencoded({ extended: false }));
-exports.app.use('/api/accounts', users_router_1.default);
-exports.app.use('/api/accounts/:id/comments', comments_router_1.default);
-exports.app.use('/api/accounts/:id/posts', posts_router_1.default);
-// Start server
-// eslint-disable-next-line no-undef
-var port = process.env.PORT;
-var start = function () { return __awaiter(void 0, void 0, void 0, function () {
+exports.createUserService = void 0;
+var client_1 = require("@prisma/client");
+var prisma = new client_1.PrismaClient();
+var createUserService = function (params) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        try {
-            exports.app.listen(port, function () {
-                console.log("REST API on http://localhost:" + port + "/");
-            });
+        switch (_a.label) {
+            case 0: 
+            // eslint-disable-next-line no-unused-vars
+            return [4 /*yield*/, prisma.user.create({
+                    data: __assign({}, params),
+                })];
+            case 1:
+                // eslint-disable-next-line no-unused-vars
+                _a.sent();
+                return [2 /*return*/, 'created user'];
         }
-        catch (e) {
-            console.error(e);
-        }
-        return [2 /*return*/];
     });
 }); };
-start();
+exports.createUserService = createUserService;

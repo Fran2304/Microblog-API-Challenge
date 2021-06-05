@@ -1,11 +1,9 @@
 import express from 'express'
 
-
 // eslint-disable-next-line no-unused-vars
 import * as commentService from '../services/comment/crudCommentService'
 
 export const getComments = (req: express.Request, res: express.Response) => {
-    //llamar aca all service
     //await commentService.getAllComments(1)
     //     //   .then(response => ApiResponse.success(res, response))
     //     //   .catch(err => ApiResponse.error(res, err));

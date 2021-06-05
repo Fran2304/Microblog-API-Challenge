@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import * as controller from '../controllers/comment.controller'
 
-const router = Router()
+const router = Router({ mergeParams: true })
 
 router.route('/').get(controller.getComments).post(controller.postComment)
 

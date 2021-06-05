@@ -1,10 +1,16 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
-// export const getAllComments= authorId=>{
-//     //const comment = await prisma.Comment.get();
-
-// };
+// eslint-disable-next-line no-unused-vars
+export const getAllComments = async (authorId: string) => {
+    const authId: number = Number.parseInt(authorId)
+    const comments = await prisma.comment.findMany({
+        where: {
+            authorId: authId,
+        },
+    })
+    return comments
+}
 
 export const createService = async (authorId: number) => {
     await prisma.comment.create({

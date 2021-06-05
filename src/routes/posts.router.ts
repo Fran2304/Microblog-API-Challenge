@@ -1,13 +1,14 @@
 import { Router } from 'express'
-const controller = (req: any, res: any) => {
-    console.log(req.body)
-    res.send({ me: 'los post' })
-}
-const router = Router()
+import * as controller from '../controllers/post.controller'
 
-// /api/account
-router.route('/').get(controller).post(controller)
+const router = Router({ mergeParams: true })
 
-// /api/account:id
-router.route('/:id').put(controller).delete(controller).get(controller)
+router.route('/').get(controller.getPosts).post(controller.createPost)
+
+router
+    .route('/:id')
+    .get(controller.readPost)
+    .patch(controller.updatePost)
+    .delete(controller.deletePost)
+
 export default router

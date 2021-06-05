@@ -55,15 +55,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readComment = exports.deleteComment = exports.updateComment = exports.createComment = exports.getComments = void 0;
-var commentService = __importStar(require("../services/comment/crudCommentService"));
-var getComments = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.readPost = exports.deletePost = exports.updatePost = exports.createPost = exports.getPosts = void 0;
+var postService = __importStar(require("../services/post/crudPostService"));
+var getPosts = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var allComments, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.getAllComments(req.params.id)];
+                return [4 /*yield*/, postService.getAllPosts(req.params.id)];
             case 1:
                 allComments = _a.sent();
                 if (allComments.result.length == 0) {
@@ -83,14 +83,14 @@ var getComments = function (req, res) { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
-exports.getComments = getComments;
-var createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getPosts = getPosts;
+var createPost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var create, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.createComment(req.body)];
+                return [4 /*yield*/, postService.createPost(req.body)];
             case 1:
                 create = _a.sent();
                 res.status(create.status).end();
@@ -103,14 +103,14 @@ var createComment = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.createComment = createComment;
-var updateComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.createPost = createPost;
+var updatePost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var update, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.updateComment(req.params.id, req.params.content)];
+                return [4 /*yield*/, postService.updatePost(req.params.id, req.params.content)];
             case 1:
                 update = _a.sent();
                 res.status(update.status).end();
@@ -123,14 +123,14 @@ var updateComment = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.updateComment = updateComment;
-var deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.updatePost = updatePost;
+var deletePost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var deletion, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.deleteComment(req.params.id)];
+                return [4 /*yield*/, postService.deletePost(req.params.id)];
             case 1:
                 deletion = _a.sent();
                 res.status(deletion.status).json({ data: deletion.result });
@@ -143,14 +143,14 @@ var deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.deleteComment = deleteComment;
-var readComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.deletePost = deletePost;
+var readPost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var read, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.readComment(req.params.id)];
+                return [4 /*yield*/, postService.readPost(req.params.id)];
             case 1:
                 read = _a.sent();
                 res.status(read.status).json({ data: read.result });
@@ -163,4 +163,4 @@ var readComment = function (req, res) { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
-exports.readComment = readComment;
+exports.readPost = readPost;

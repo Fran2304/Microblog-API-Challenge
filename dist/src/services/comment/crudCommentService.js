@@ -1,22 +1,14 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -55,113 +47,125 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readComment = exports.deleteComment = exports.updateComment = exports.createComment = exports.getComments = void 0;
-//import { ErrorHandler } from '../interfaces/error.interface'
-var commentService = __importStar(require("../services/comment/crudCommentService"));
-var getComments = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var allComments, e_1;
+exports.readComment = exports.deleteComment = exports.updateComment = exports.createComment = exports.getAllComments = void 0;
+var client_1 = require("@prisma/client");
+var errorHandler_1 = require("../../interfaces/errorHandler");
+var dataHelper_1 = require("../../Helpers/dataHelper");
+var prisma = new client_1.PrismaClient();
+var getAllComments = function (authorId) { return __awaiter(void 0, void 0, void 0, function () {
+    var comments, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.getAllComments(req.params.id)
-                    //.lean()
-                    //.exec()
-                ];
+                return [4 /*yield*/, prisma.comment.findMany({
+                        where: {
+                            authorId: dataHelper_1.fixId(authorId),
+                            published: true,
+                        },
+                    })];
             case 1:
-                allComments = _a.sent();
-                //.lean()
-                //.exec()
-                res.status(allComments.status).json({ data: allComments.result });
-                return [3 /*break*/, 3];
+                comments = _a.sent();
+                return [2 /*return*/, { result: comments, status: 200 }];
             case 2:
                 e_1 = _a.sent();
-                res.status(e_1.status).json({ data: e_1.result });
-                return [3 /*break*/, 3];
+                throw new errorHandler_1.ErrorHandler('cant get comments', 404, e_1.message);
             case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getComments = getComments;
-var createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getAllComments = getAllComments;
+var createComment = function (params) { return __awaiter(void 0, void 0, void 0, function () {
     var e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.createComment(req.body)];
+                return [4 /*yield*/, prisma.comment.create({
+                        data: __assign(__assign({}, params), { likesQuantity: 0 }),
+                    })];
             case 1:
                 _a.sent();
-                res.status(204).end();
-                return [3 /*break*/, 3];
+                return [2 /*return*/, { result: null, status: 204 }];
             case 2:
                 e_2 = _a.sent();
-                console.error(e_2);
-                res.status(400).end();
-                return [3 /*break*/, 3];
+                throw new errorHandler_1.ErrorHandler('cant create comment', 404, e_2.message);
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.createComment = createComment;
-var updateComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var updateComment = function (id, content) { return __awaiter(void 0, void 0, void 0, function () {
     var e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.updateComment(req.params.id, req.params.content)];
+                return [4 /*yield*/, prisma.comment.update({
+                        where: {
+                            id: dataHelper_1.fixId(id),
+                        },
+                        data: {
+                            content: content,
+                        },
+                    })];
             case 1:
                 _a.sent();
-                res.status(204).end();
-                return [3 /*break*/, 3];
+                return [2 /*return*/, { result: null, status: 204 }];
             case 2:
                 e_3 = _a.sent();
-                console.error(e_3);
-                res.status(400).end();
-                return [3 /*break*/, 3];
+                throw new errorHandler_1.ErrorHandler('cant update comment', 404, e_3.message);
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.updateComment = updateComment;
-var deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var e_4;
+var deleteComment = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var commentToDelete, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.deleteComment(req.params.id)];
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, prisma.comment.findFirst({
+                        where: {
+                            id: dataHelper_1.fixId(id),
+                        },
+                    })];
             case 1:
-                _a.sent();
-                res.status(200).end();
-                return [3 /*break*/, 3];
+                commentToDelete = _a.sent();
+                return [4 /*yield*/, prisma.comment.delete({
+                        where: {
+                            id: dataHelper_1.fixId(id),
+                        },
+                    })];
             case 2:
+                _a.sent();
+                return [2 /*return*/, { result: commentToDelete, status: 200 }];
+            case 3:
                 e_4 = _a.sent();
-                console.error(e_4);
-                res.status(400).end();
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                throw new errorHandler_1.ErrorHandler('cant delete comment', 404, e_4.message);
+            case 4: return [2 /*return*/];
         }
     });
 }); };
 exports.deleteComment = deleteComment;
-var readComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var e_5;
+var readComment = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var comment, e_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.readComment(req.params.id)];
+                return [4 /*yield*/, prisma.comment.findFirst({
+                        where: {
+                            id: dataHelper_1.fixId(id),
+                        },
+                    })];
             case 1:
-                _a.sent();
-                res.status(204).end();
-                return [3 /*break*/, 3];
+                comment = _a.sent();
+                return [2 /*return*/, { result: comment, status: 200 }];
             case 2:
                 e_5 = _a.sent();
-                console.error(e_5);
-                res.status(400).end();
-                return [3 /*break*/, 3];
+                throw new errorHandler_1.ErrorHandler('cant read comment', 404, e_5.message);
             case 3: return [2 /*return*/];
         }
     });

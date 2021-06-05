@@ -53,13 +53,10 @@ var prisma = new client_1.PrismaClient();
 var createUserService = function (params) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: 
-            // eslint-disable-next-line no-unused-vars
-            return [4 /*yield*/, prisma.user.create({
+            case 0: return [4 /*yield*/, prisma.user.create({
                     data: __assign({}, params),
                 })];
             case 1:
-                // eslint-disable-next-line no-unused-vars
                 _a.sent();
                 return [2 /*return*/, 'created user'];
         }

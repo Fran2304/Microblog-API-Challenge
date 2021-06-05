@@ -21,15 +21,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var controller = __importStar(require("../controllers/comment.controller"));
-<<<<<<< HEAD
 var router = express_1.Router({ mergeParams: true });
-=======
-var router = express_1.Router();
->>>>>>> cf897de0af32cd77ddb4c6ad434520bd371125b8
-router.route('/').get(controller.getComments).post(controller.postComment);
+router.route('/').get(controller.getComments).post(controller.createComment);
 router
     .route('/:id')
-    .get(controller.getComment)
+    .get(controller.readComment)
     .patch(controller.updateComment)
     .delete(controller.deleteComment);
 exports.default = router;

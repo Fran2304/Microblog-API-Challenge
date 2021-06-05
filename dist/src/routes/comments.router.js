@@ -20,7 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
-var controller = __importStar(require("../comment.controller"));
+var controller = __importStar(require("../controllers/comment.controller"));
 var router = express_1.Router();
 router.route('/').get(controller.getComments).post(controller.postComment);
 router

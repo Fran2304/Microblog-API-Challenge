@@ -4,7 +4,7 @@ import { json, urlencoded } from 'body-parser'
 import usersRouter from './src/routes/users.router'
 import postsRouter from './src/routes/posts.router'
 import commentsRouter from './src/routes/comments.router'
-import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv'
 dotenv.config()
 
 export const app = express()

@@ -15,7 +15,7 @@ export const getAllComments = async (authorId: string) => {
         })
         return { result: comments, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('cant get comments', 404, e.message)
+        throw new ErrorHandler('ERROR: cant get comments', 404, e.message)
     }
 }
 
@@ -29,7 +29,7 @@ export const createComment = async (params: Icomment) => {
         })
         return { result: null, status: 204 }
     } catch (e) {
-        throw new ErrorHandler('cant create comment', 404, e.message)
+        throw new ErrorHandler('ERROR: cant create comment', 404, e.message)
     }
 }
 
@@ -45,7 +45,7 @@ export const updateComment = async (id: string, content: string) => {
         })
         return { result: null, status: 204 }
     } catch (e) {
-        throw new ErrorHandler('cant update comment', 404, e.message)
+        throw new ErrorHandler('ERROR: cant update comment', 404, e.message)
     }
 }
 
@@ -63,7 +63,7 @@ export const deleteComment = async (id: string) => {
         })
         return { result: commentToDelete, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('cant delete comment', 404, e.message)
+        throw new ErrorHandler('ERROR: cant delete comment', 404, e.message)
     }
 }
 
@@ -76,6 +76,6 @@ export const readComment = async (id: string) => {
         })
         return { result: comment, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('cant read comment', 404, e.message)
+        throw new ErrorHandler('ERROR: cant read comment', 404, e.message)
     }
 }

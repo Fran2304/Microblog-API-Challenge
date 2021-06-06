@@ -11,8 +11,8 @@ model User {
   id              Int     @id @default(autoincrement())
   email           String  @unique @db.VarChar(255)
   nickname        String  @unique @db.VarChar(255)
-  firstName       String  @map(name: "first_name")
-  lastName        String  @map(name: "last_name")
+  firstName       String  @map(name: "first_name") 
+  lastName        String  @map(name: "last_name") 
   visibleEmail    Boolean @default(false) @map(name: "visible_mail")
   visibleName     Boolean @default(false) @map(name: "visible_name")
   password        String  

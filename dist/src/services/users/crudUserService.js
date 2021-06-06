@@ -47,19 +47,53 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUserService = void 0;
+exports.readUserService = exports.createUserService = void 0;
 var client_1 = require("@prisma/client");
+var errorHandler_1 = require("../../interfaces/errorHandler");
 var prisma = new client_1.PrismaClient();
 var createUserService = function (params) { return __awaiter(void 0, void 0, void 0, function () {
+    var createdUser, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, prisma.user.create({
-                    data: __assign({}, params),
-                })];
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, prisma.user.create({
+                        data: __assign({}, params),
+                    })];
             case 1:
-                _a.sent();
-                return [2 /*return*/, 'created user'];
+                createdUser = _a.sent();
+                return [2 /*return*/, { result: createdUser, status: 201 }];
+            case 2:
+                e_1 = _a.sent();
+                throw new errorHandler_1.ErrorHandler('cant create users', 404, e_1.message);
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.createUserService = createUserService;
+var readUserService = function (params) { return __awaiter(void 0, void 0, void 0, function () {
+    var readUser, e_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, prisma.user.findUnique({
+                        where: {
+                            email: params.email,
+                        },
+                    })];
+            case 1:
+                readUser = _a.sent();
+                return [2 /*return*/, { result: readUser === null || readUser === void 0 ? void 0 : readUser.id, status: 200 }];
+            case 2:
+                e_2 = _a.sent();
+                throw new errorHandler_1.ErrorHandler('cant get user', 404, e_2.message);
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.readUserService = readUserService;
+// export const getAllUsers = async () => {
+//     const users = await prisma.user.findMany({})
+//     return { result: users, status: 200 }
+// }

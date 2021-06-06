@@ -54,11 +54,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.getUser = exports.createUser = void 0;
+exports.getAllUsers = exports.updateUser = exports.signin = exports.signup = exports.verifyToken = exports.newToken = void 0;
 var userService = __importStar(require("../services/users/crudUserService"));
-var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, e_1;
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var secrets = {
+    jwt: 'gatita',
+    jwtExp: '100d',
+};
+var newToken = function (userId) {
+    return jsonwebtoken_1.default.sign({ id: userId }, secrets.jwt, {
+        expiresIn: secrets.jwtExp,
+    });
+};
+exports.newToken = newToken;
+// ojito con el type token
+var verifyToken = function (token) {
+    return new Promise(function (resolve, reject) {
+        jsonwebtoken_1.default.verify(token, secrets.jwt, function (err, payload) {
+            if (err)
+                return reject(err);
+            resolve(payload);
+        });
+    });
+};
+exports.verifyToken = verifyToken;
+var signup = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, token, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -71,21 +96,74 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 return [4 /*yield*/, userService.createUserService(req.body)];
             case 2:
                 user = _a.sent();
-                return [2 /*return*/, res.status(201).send({ user: user })];
+                token = exports.newToken(user.result.id);
+                return [2 /*return*/, res.status(201).send({ token: token })];
             case 3:
                 e_1 = _a.sent();
                 console.error(e_1);
-                return [2 /*return*/, res.status(400).end()];
+                return [2 /*return*/, res.status(500).end()];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.createUser = createUser;
-var getUser = function (req, res) {
-    res.status(200).json({ data: 'hola' });
-};
-exports.getUser = getUser;
+exports.signup = signup;
+var signin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var invalid, user, e_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email || !req.body.password) {
+                    return [2 /*return*/, res.status(400).send({ message: 'need email and password' })];
+                }
+                invalid = { message: 'Invalid email and passoword combination' };
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, userService.readUserService(req.body)];
+            case 2:
+                user = _a.sent();
+                if (!user) {
+                    return [2 /*return*/, res.status(401).send(invalid)];
+                }
+                // const token = newToken(user.result)
+                return [2 /*return*/, res.status(201).send({ user: user })];
+            case 3:
+                e_2 = _a.sent();
+                console.error(e_2);
+                res.status(500).end();
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.signin = signin;
+// export const protect = async (req, res, next) => {
+//     const bearer = req.headers.authorization
+//     if (!bearer || !bearer.startsWith('Bearer ')) {
+//         return res.status(401).end()
+//     }
+//     const token = bearer.split('Bearer ')[1].trim()
+//     let payload
+//     try {
+//         payload = await verifyToken(token)
+//     } catch (e) {
+//         return res.status(401).end()
+//     }
+//     const user = await User.findById(payload.id)
+//         .select('-password')
+//         .lean()
+//         .exec()
+//     if (!user) {
+//         return res.status(401).end()
+//     }
+//     req.user = user
+//     next()
+// }
 var updateUser = function (req, res) {
     res.status(200).json({ data: 'hola' });
 };
 exports.updateUser = updateUser;
+var getAllUsers = function (req, res) {
+    res.status(200).json({ data: 'hola' });
+};
+exports.getAllUsers = getAllUsers;

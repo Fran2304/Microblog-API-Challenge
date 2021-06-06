@@ -5,6 +5,9 @@ import usersRouter from './src/routes/users.router'
 import postsRouter from './src/routes/posts.router'
 import commentsRouter from './src/routes/comments.router'
 import * as dotenv from 'dotenv'
+
+import { signin, signup } from './src/controllers/user.controllers'
+
 dotenv.config()
 
 export const app = express()
@@ -15,6 +18,10 @@ app.use(cors())
 app.use(json())
 app.use(urlencoded({ extended: false }))
 
+app.post('/signup', signup)
+app.post('/signin', signin)
+
+// app.use('/api', protect)
 app.use('/api/accounts', usersRouter)
 app.use('/api/accounts/:id/comments', commentsRouter)
 app.use('/api/accounts/:id/posts', postsRouter)

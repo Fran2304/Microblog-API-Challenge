@@ -8,6 +8,9 @@ import commentsUserRouter from './src/routes/commentUsers.router'
 import commentsRouter from './src/routes/comments.router'
 
 import * as dotenv from 'dotenv'
+
+import { signin, signup } from './src/controllers/user.controllers'
+
 dotenv.config()
 
 export const app = express()
@@ -18,6 +21,10 @@ app.use(cors())
 app.use(json())
 app.use(urlencoded({ extended: false }))
 
+app.post('/signup', signup)
+app.post('/signin', signin)
+
+// app.use('/api', protect)
 app.use('/api/accounts', usersRouter)
 
 app.use('/api/accounts/:id/posts', postsUserRouter)

@@ -21,11 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var controller = __importStar(require("../controllers/post.controller"));
-var router = express_1.Router({ mergeParams: true });
-router.route('/').get(controller.getPosts).post(controller.createPost);
-router
-    .route('/:id')
-    .get(controller.readPost)
-    .patch(controller.updatePost)
-    .delete(controller.deletePost);
+var router = express_1.Router();
+router.route('/').get(controller.getPosts);
+router.route('/:id').get(controller.readPost);
 exports.default = router;

@@ -55,25 +55,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readComment = exports.deleteComment = exports.updateComment = exports.createComment = exports.getComments = void 0;
+exports.readComment = exports.getComments = exports.deleteComment = exports.updateComment = exports.createComment = void 0;
 var commentService = __importStar(require("../services/comment/crudCommentService"));
-var getComments = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var allComments, err_1;
+var createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var create, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.getAllComments(req.params.id)];
+                return [4 /*yield*/, commentService.createComment(req.params.id, req.body)];
             case 1:
-                allComments = _a.sent();
-                if (allComments.result.length == 0) {
-                    res.status(allComments.status).json({
-                        data: 'no comments for user',
-                    });
-                }
-                else {
-                    res.status(allComments.status).json({ data: allComments.result });
-                }
+                create = _a.sent();
+                res.status(create.status).end();
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();
@@ -83,17 +76,17 @@ var getComments = function (req, res) { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
-exports.getComments = getComments;
-var createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var create, err_2;
+exports.createComment = createComment;
+var updateComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var update, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.createComment(req.body)];
+                return [4 /*yield*/, commentService.updateComment(req.params.id, req.params.CommentId, req.body)];
             case 1:
-                create = _a.sent();
-                res.status(create.status).end();
+                update = _a.sent();
+                res.status(update.status).json({ data: update.status });
                 return [3 /*break*/, 3];
             case 2:
                 err_2 = _a.sent();
@@ -103,17 +96,17 @@ var createComment = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.createComment = createComment;
-var updateComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var update, err_3;
+exports.updateComment = updateComment;
+var deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var deletion, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.updateComment(req.params.id, req.params.content)];
+                return [4 /*yield*/, commentService.deleteComment(req.params.id, req.params.CommentId)];
             case 1:
-                update = _a.sent();
-                res.status(update.status).end();
+                deletion = _a.sent();
+                res.status(deletion.status).json({ data: deletion.result });
                 return [3 /*break*/, 3];
             case 2:
                 err_3 = _a.sent();
@@ -123,17 +116,17 @@ var updateComment = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.updateComment = updateComment;
-var deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var deletion, err_4;
+exports.deleteComment = deleteComment;
+var getComments = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var allComments, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.deleteComment(req.params.id)];
+                return [4 /*yield*/, commentService.readPublishedComments()];
             case 1:
-                deletion = _a.sent();
-                res.status(deletion.status).json({ data: deletion.result });
+                allComments = _a.sent();
+                res.status(allComments.status).json({ data: allComments.result });
                 return [3 /*break*/, 3];
             case 2:
                 err_4 = _a.sent();
@@ -143,7 +136,7 @@ var deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.deleteComment = deleteComment;
+exports.getComments = getComments;
 var readComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var read, err_5;
     return __generator(this, function (_a) {

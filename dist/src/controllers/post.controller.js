@@ -55,25 +55,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readPost = exports.deletePost = exports.updatePost = exports.createPost = exports.getPosts = void 0;
+exports.readPost = exports.getPosts = exports.deletePost = exports.updatePost = exports.createPost = void 0;
 var postService = __importStar(require("../services/post/crudPostService"));
-var getPosts = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var allComments, err_1;
+var createPost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var create, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, postService.getAllPosts(req.params.id)];
+                return [4 /*yield*/, postService.createPost(req.params.id, req.body)];
             case 1:
-                allComments = _a.sent();
-                if (allComments.result.length == 0) {
-                    res.status(allComments.status).json({
-                        data: 'no comments for user',
-                    });
-                }
-                else {
-                    res.status(allComments.status).json({ data: allComments.result });
-                }
+                create = _a.sent();
+                res.status(create.status).end();
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _a.sent();
@@ -83,17 +76,17 @@ var getPosts = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
         }
     });
 }); };
-exports.getPosts = getPosts;
-var createPost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var create, err_2;
+exports.createPost = createPost;
+var updatePost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var update, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, postService.createPost(req.body)];
+                return [4 /*yield*/, postService.updatePost(req.params.id, req.params.postId, req.body)];
             case 1:
-                create = _a.sent();
-                res.status(create.status).end();
+                update = _a.sent();
+                res.status(update.status).json({ data: update.status });
                 return [3 /*break*/, 3];
             case 2:
                 err_2 = _a.sent();
@@ -103,17 +96,17 @@ var createPost = function (req, res) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
-exports.createPost = createPost;
-var updatePost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var update, err_3;
+exports.updatePost = updatePost;
+var deletePost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var deletion, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, postService.updatePost(req.params.id, req.params.content)];
+                return [4 /*yield*/, postService.deletePost(req.params.id, req.params.postId)];
             case 1:
-                update = _a.sent();
-                res.status(update.status).end();
+                deletion = _a.sent();
+                res.status(deletion.status).json({ data: deletion.result });
                 return [3 /*break*/, 3];
             case 2:
                 err_3 = _a.sent();
@@ -123,17 +116,17 @@ var updatePost = function (req, res) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
-exports.updatePost = updatePost;
-var deletePost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var deletion, err_4;
+exports.deletePost = deletePost;
+var getPosts = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var allPosts, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, postService.deletePost(req.params.id)];
+                return [4 /*yield*/, postService.readPublishedPosts()];
             case 1:
-                deletion = _a.sent();
-                res.status(deletion.status).json({ data: deletion.result });
+                allPosts = _a.sent();
+                res.status(allPosts.status).json({ data: allPosts.result });
                 return [3 /*break*/, 3];
             case 2:
                 err_4 = _a.sent();
@@ -143,7 +136,7 @@ var deletePost = function (req, res) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
-exports.deletePost = deletePost;
+exports.getPosts = getPosts;
 var readPost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var read, err_5;
     return __generator(this, function (_a) {

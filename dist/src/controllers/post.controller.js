@@ -56,7 +56,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readPost = exports.getPosts = exports.deletePost = exports.updatePost = exports.createPost = void 0;
-var postService = __importStar(require("../services/post/crudPostService"));
+var postService = __importStar(require("../services/posts/crudPostService"));
 var createPost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var create, err_1;
     return __generator(this, function (_a) {

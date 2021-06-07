@@ -5,7 +5,11 @@ import { fixId } from '../../Helpers/dataHelper'
 
 const prisma = new PrismaClient()
 
-export const createComment = async (authorId: string, params: Icomment) => {
+export const createComment = async (
+    authorId: string,
+    postId: string,
+    params: Icomment
+) => {
     try {
         const today: Date = new Date()
         await prisma.comment.create({
@@ -15,6 +19,7 @@ export const createComment = async (authorId: string, params: Icomment) => {
                 published: params.published != null ? params.published : true,
                 likesQuantity: 0,
                 authorId: fixId(authorId),
+                postId: fixId(postId),
             },
         })
         return { result: null, status: 204 }
@@ -26,6 +31,7 @@ export const createComment = async (authorId: string, params: Icomment) => {
 
 export const updateComment = async (
     id: string,
+    postId: string,
     commentId: string,
     params: Icomment
 ) => {
@@ -44,12 +50,25 @@ export const updateComment = async (
         commentToUpdate = await prisma.comment.findFirst({
             where: {
                 id: fixId(commentId),
+                postId: fixId(postId),
+            },
+        })
+        if (commentToUpdate == null) {
+            return {
+                result: 'cant update comment because its not related to post',
+                status: 404,
+            }
+        }
+        commentToUpdate = await prisma.comment.findFirst({
+            where: {
+                id: fixId(commentId),
+                postId: fixId(postId),
                 authorId: fixId(id),
             },
         })
         if (commentToUpdate == null) {
             return {
-                result: 'cant update comment because does not belongs to user',
+                result: 'cant update comment that does not belongs to user',
                 status: 404,
             }
         }
@@ -68,7 +87,11 @@ export const updateComment = async (
     }
 }
 
-export const deleteComment = async (id: string, commentId: string) => {
+export const deleteComment = async (
+    id: string,
+    postId: string,
+    commentId: string
+) => {
     try {
         let commentToDelete = await prisma.comment.findFirst({
             where: {
@@ -84,6 +107,19 @@ export const deleteComment = async (id: string, commentId: string) => {
         commentToDelete = await prisma.comment.findFirst({
             where: {
                 id: fixId(commentId),
+                postId: fixId(postId),
+            },
+        })
+        if (commentToDelete == null) {
+            return {
+                result: 'cant delete comment because its not related to post',
+                status: 404,
+            }
+        }
+        commentToDelete = await prisma.comment.findFirst({
+            where: {
+                id: fixId(commentId),
+                postId: fixId(postId),
                 authorId: fixId(id),
             },
         })
@@ -105,11 +141,12 @@ export const deleteComment = async (id: string, commentId: string) => {
     }
 }
 
-export const readPublishedComments = async () => {
+export const readPublishedComments = async (postId: string) => {
     try {
         const comments = await prisma.comment.findMany({
             where: {
                 published: true,
+                postId: fixId(postId),
             },
         })
         if (comments.length == 0) {
@@ -121,16 +158,28 @@ export const readPublishedComments = async () => {
     }
 }
 
-export const readComment = async (id: string) => {
+export const readComment = async (postId: string, commentId: string) => {
     try {
-        const comment = await prisma.comment.findFirst({
+        let comment = await prisma.comment.findFirst({
             where: {
-                id: fixId(id),
+                id: fixId(commentId),
             },
         })
         if (comment == null) {
             return {
                 result: 'comment that does not exist',
+                status: 404,
+            }
+        }
+        comment = await prisma.comment.findFirst({
+            where: {
+                id: fixId(commentId),
+                postId: fixId(postId),
+            },
+        })
+        if (comment == null) {
+            return {
+                result: 'comment is not related to post',
                 status: 404,
             }
         }

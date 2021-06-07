@@ -19,11 +19,13 @@ app.use(json())
 app.use(urlencoded({ extended: false }))
 
 app.use('/api/accounts', usersRouter)
+
 app.use('/api/accounts/:id/posts', postsUserRouter)
 app.use('/api/posts', postsRouter)
 
-app.use('/api/accounts/:id/posts/:postId', commentsUserRouter)
-app.use('/api/posts/:postId/comments', commentsRouter)
+app.use('/api/accounts/:id/posts/:postId/comments', commentsUserRouter)
+app.use('/api/posts/:id/comments', commentsRouter)
+console.log(app.routes)
 
 // Start server
 // eslint-disable-next-line no-undef

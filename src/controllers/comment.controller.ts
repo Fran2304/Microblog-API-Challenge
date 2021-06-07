@@ -1,5 +1,5 @@
 import express from 'express'
-import * as commentService from '../services/comment/crudCommentService'
+import * as commentService from '../services/comments/crudCommentService'
 
 export const createComment = async (
     req: express.Request,
@@ -8,6 +8,7 @@ export const createComment = async (
     try {
         const create = await commentService.createComment(
             req.params.id,
+            req.params.postId,
             req.body
         )
         res.status(create.status).end()
@@ -23,7 +24,8 @@ export const updateComment = async (
     try {
         const update = await commentService.updateComment(
             req.params.id,
-            req.params.CommentId,
+            req.params.postId,
+            req.params.commentId,
             req.body
         )
         res.status(update.status).json({ data: update.status })
@@ -39,7 +41,8 @@ export const deleteComment = async (
     try {
         const deletion = await commentService.deleteComment(
             req.params.id,
-            req.params.CommentId
+            req.params.postId,
+            req.params.commentId
         )
         res.status(deletion.status).json({ data: deletion.result })
     } catch (err) {
@@ -52,7 +55,9 @@ export const getComments = async (
     res: express.Response
 ) => {
     try {
-        const allComments = await commentService.readPublishedComments()
+        const allComments = await commentService.readPublishedComments(
+            req.params.id
+        )
         res.status(allComments.status).json({ data: allComments.result })
     } catch (err) {
         res.status(err.status).json({ data: err.message })
@@ -64,7 +69,10 @@ export const readComment = async (
     res: express.Response
 ) => {
     try {
-        const read = await commentService.readComment(req.params.id)
+        const read = await commentService.readComment(
+            req.params.id,
+            req.params.commentId
+        )
         res.status(read.status).json({ data: read.result })
     } catch (err) {
         res.status(err.status).json({ data: err.message })

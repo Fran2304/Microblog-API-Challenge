@@ -77,8 +77,9 @@ exports.app.use(body_parser_1.urlencoded({ extended: false }));
 exports.app.use('/api/accounts', users_router_1.default);
 exports.app.use('/api/accounts/:id/posts', postUsers_router_1.default);
 exports.app.use('/api/posts', posts_router_1.default);
-exports.app.use('/api/accounts/:id/posts/:postId', commentUsers_router_1.default);
-exports.app.use('/api/posts/:postId/comments', comments_router_1.default);
+exports.app.use('/api/accounts/:id/posts/:postId/comments', commentUsers_router_1.default);
+exports.app.use('/api/posts/:id/comments', comments_router_1.default);
+console.log(exports.app.routes);
 // Start server
 // eslint-disable-next-line no-undef
 var port = process.env.PORT;

@@ -56,14 +56,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readComment = exports.getComments = exports.deleteComment = exports.updateComment = exports.createComment = void 0;
-var commentService = __importStar(require("../services/comment/crudCommentService"));
+var commentService = __importStar(require("../services/comments/crudCommentService"));
 var createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var create, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.createComment(req.params.id, req.body)];
+                return [4 /*yield*/, commentService.createComment(req.params.id, req.params.postId, req.body)];
             case 1:
                 create = _a.sent();
                 res.status(create.status).end();
@@ -83,7 +83,7 @@ var updateComment = function (req, res) { return __awaiter(void 0, void 0, void 
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.updateComment(req.params.id, req.params.CommentId, req.body)];
+                return [4 /*yield*/, commentService.updateComment(req.params.id, req.params.postId, req.params.commentId, req.body)];
             case 1:
                 update = _a.sent();
                 res.status(update.status).json({ data: update.status });
@@ -103,7 +103,7 @@ var deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.deleteComment(req.params.id, req.params.CommentId)];
+                return [4 /*yield*/, commentService.deleteComment(req.params.id, req.params.postId, req.params.commentId)];
             case 1:
                 deletion = _a.sent();
                 res.status(deletion.status).json({ data: deletion.result });
@@ -123,7 +123,7 @@ var getComments = function (req, res) { return __awaiter(void 0, void 0, void 0,
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.readPublishedComments()];
+                return [4 /*yield*/, commentService.readPublishedComments(req.params.id)];
             case 1:
                 allComments = _a.sent();
                 res.status(allComments.status).json({ data: allComments.result });
@@ -143,7 +143,7 @@ var readComment = function (req, res) { return __awaiter(void 0, void 0, void 0,
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, commentService.readComment(req.params.id)];
+                return [4 /*yield*/, commentService.readComment(req.params.id, req.params.commentId)];
             case 1:
                 read = _a.sent();
                 res.status(read.status).json({ data: read.result });

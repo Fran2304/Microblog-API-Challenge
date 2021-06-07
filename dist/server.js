@@ -63,7 +63,9 @@ var cors_1 = __importDefault(require("cors"));
 var express_1 = __importDefault(require("express"));
 var body_parser_1 = require("body-parser");
 var users_router_1 = __importDefault(require("./src/routes/users.router"));
+var postUsers_router_1 = __importDefault(require("./src/routes/postUsers.router"));
 var posts_router_1 = __importDefault(require("./src/routes/posts.router"));
+var commentUsers_router_1 = __importDefault(require("./src/routes/commentUsers.router"));
 var comments_router_1 = __importDefault(require("./src/routes/comments.router"));
 var dotenv = __importStar(require("dotenv"));
 var user_controllers_1 = require("./src/controllers/user.controllers");
@@ -77,8 +79,10 @@ exports.app.post('/signup', user_controllers_1.signup);
 exports.app.post('/signin', user_controllers_1.signin);
 // app.use('/api', protect)
 exports.app.use('/api/accounts', users_router_1.default);
-exports.app.use('/api/accounts/:id/comments', comments_router_1.default);
-exports.app.use('/api/accounts/:id/posts', posts_router_1.default);
+exports.app.use('/api/accounts/:id/posts', postUsers_router_1.default);
+exports.app.use('/api/posts', posts_router_1.default);
+exports.app.use('/api/accounts/:id/posts/:postId', commentUsers_router_1.default);
+exports.app.use('/api/posts/:postId/comments', comments_router_1.default);
 // Start server
 // eslint-disable-next-line no-undef
 var port = process.env.PORT;

@@ -1,13 +1,9 @@
 import { Router } from 'express'
-const controller = (req: any, res: any) => {
-    console.log(req.body)
-    res.send({ me: 'los post' })
-}
+import * as controller from '../controllers/post.controller'
+
 const router = Router()
 
-// /api/account
-router.route('/').get(controller).post(controller)
+router.route('/').get(controller.getPosts)
+router.route('/:id').get(controller.readPost)
 
-// /api/account:id
-router.route('/:id').put(controller).delete(controller).get(controller)
 export default router

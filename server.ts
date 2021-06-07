@@ -2,8 +2,11 @@ import cors from 'cors'
 import express from 'express'
 import { json, urlencoded } from 'body-parser'
 import usersRouter from './src/routes/users.router'
+import postsUserRouter from './src/routes/postUsers.router'
 import postsRouter from './src/routes/posts.router'
+import commentsUserRouter from './src/routes/commentUsers.router'
 import commentsRouter from './src/routes/comments.router'
+
 import * as dotenv from 'dotenv'
 
 import { signin, signup } from './src/controllers/user.controllers'
@@ -23,8 +26,11 @@ app.post('/signin', signin)
 
 // app.use('/api', protect)
 app.use('/api/accounts', usersRouter)
-app.use('/api/accounts/:id/comments', commentsRouter)
-app.use('/api/accounts/:id/posts', postsRouter)
+app.use('/api/accounts/:id/posts', postsUserRouter)
+app.use('/api/posts', postsRouter)
+
+app.use('/api/accounts/:id/posts/:postId', commentsUserRouter)
+app.use('/api/posts/:postId/comments', commentsRouter)
 
 // Start server
 // eslint-disable-next-line no-undef

@@ -20,6 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
+<<<<<<< HEAD
 var controller = __importStar(require("../controllers/comment.controller"));
 var router = express_1.Router({ mergeParams: true });
 router.route('/').get(controller.getComments).post(controller.createComment);
@@ -28,4 +29,10 @@ router
     .get(controller.readComment)
     .patch(controller.updateComment)
     .delete(controller.deleteComment);
+=======
+var controller = __importStar(require("../controllers/post.controller"));
+var router = express_1.Router({ mergeParams: true });
+router.route('/').get(controller.getPosts);
+router.route('/:commentId').get(controller.readPost);
+>>>>>>> master
 exports.default = router;

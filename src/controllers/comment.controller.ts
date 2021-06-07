@@ -1,5 +1,5 @@
 import express from 'express'
-import * as commentService from '../services/comment/crudCommentService'
+import * as commentService from '../services/comments/crudCommentService'
 
 export const createComment = async (
     req: express.Request,

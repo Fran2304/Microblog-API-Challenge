@@ -1,6 +1,13 @@
 import express from 'express'
+// import express, { NextFunction } from 'express'
 import * as userService from '../services/users/crudUserService'
 import jwt from 'jsonwebtoken'
+// import bodyParser from 'body-parser'
+
+export const app = express()
+
+// import { PrismaClient } from '@prisma/client' // protect
+// const prisma = new PrismaClient() // protect
 
 const secrets = {
     jwt: 'gatita',
@@ -60,8 +67,8 @@ export const updateUser = async (
 ) => {
     try {
         const updatedUser = await userService.updateUserService(
-            req.body.email,
-            req.body.bio
+            req.params.id,
+            req.body
         )
         res.status(updatedUser.status).json({ message: updatedUser.status })
     } catch (e) {
@@ -69,14 +76,47 @@ export const updateUser = async (
         res.status(400).end()
     }
 }
-// export const protect = async (req, res, next) => {
+
+// export const showEmail = async (
+//     req: express.Request,
+//     res: express.Response
+// ) => {
+//     try {
+//         const emailVisible = await userService.showEmailUserService(
+//             req.params.id,
+//             req.body.visibleEmail
+//         )
+//         res.status(emailVisible.status).json({ message: emailVisible.status })
+//     } catch (e) {
+//         console.error(e)
+//         res.status(400).end()
+//     }
+// }
+
+// export const showName = async (req: express.Request, res: express.Response) => {
+//     try {
+//         const nameVisible = await userService.showNameUserService(
+//             req.params.id,
+//             req.body.visibleName
+//         )
+//         res.status(nameVisible.status).json({ message: nameVisible.status })
+//     } catch (e) {
+//         console.error(e)
+//         res.status(400).end()
+//     }
+// }
+// export const protect = async (
+//     req: express.Request,
+//     res: express.Response,
+//     next: NextFunction
+// ) => {
 //     const bearer = req.headers.authorization
 
 //     if (!bearer || !bearer.startsWith('Bearer ')) {
 //         return res.status(401).end()
 //     }
 
-//     const token = bearer.split('Bearer ')[1].trim()
+//     const token = bearer.split('Bearer ')[1]
 //     let payload
 //     try {
 //         payload = await verifyToken(token)
@@ -84,16 +124,17 @@ export const updateUser = async (
 //         return res.status(401).end()
 //     }
 
-//     const user = await User.findById(payload.id)
-//         .select('-password')
-//         .lean()
-//         .exec()
+//     const user = await prisma.user.findUnique({
+//         where: {
+//             id: payload.id,
+//         },
+//     })
 
 //     if (!user) {
 //         return res.status(401).end()
 //     }
 
-//     req.user = user
+//     req.body.user = user
 //     next()
 // }
 

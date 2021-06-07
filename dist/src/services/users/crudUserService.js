@@ -47,9 +47,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserService = exports.readUserService = exports.createUserService = void 0;
+exports.showNameUserService = exports.showEmailUserService = exports.updateUserService = exports.readUserService = exports.createUserService = void 0;
 var client_1 = require("@prisma/client");
-var errorHandler_1 = require("../../interfaces/errorHandler");
+var errorHandler_1 = require("../../errorHandler/errorHandler");
+var dataHelper_1 = require("../../Helpers/dataHelper");
 var prisma = new client_1.PrismaClient();
 var createUserService = function (params) { return __awaiter(void 0, void 0, void 0, function () {
     var createdUser, e_1;
@@ -93,7 +94,7 @@ var readUserService = function (params) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.readUserService = readUserService;
-var updateUserService = function (email, bio) { return __awaiter(void 0, void 0, void 0, function () {
+var updateUserService = function (id, params) { return __awaiter(void 0, void 0, void 0, function () {
     var e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -101,11 +102,9 @@ var updateUserService = function (email, bio) { return __awaiter(void 0, void 0,
                 _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, prisma.user.update({
                         where: {
-                            email: email,
+                            id: dataHelper_1.fixId(id),
                         },
-                        data: {
-                            bio: bio,
-                        },
+                        data: __assign({}, params),
                     })];
             case 1:
                 _a.sent();
@@ -118,6 +117,56 @@ var updateUserService = function (email, bio) { return __awaiter(void 0, void 0,
     });
 }); };
 exports.updateUserService = updateUserService;
+var showEmailUserService = function (id, visibleEmail) { return __awaiter(void 0, void 0, void 0, function () {
+    var e_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, prisma.user.update({
+                        where: {
+                            id: dataHelper_1.fixId(id),
+                        },
+                        data: {
+                            visibleEmail: visibleEmail,
+                        },
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, { result: null, status: 204 }];
+            case 2:
+                e_4 = _a.sent();
+                throw new errorHandler_1.ErrorHandler('cant update comment', 404, e_4.message);
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.showEmailUserService = showEmailUserService;
+var showNameUserService = function (id, visibleName) { return __awaiter(void 0, void 0, void 0, function () {
+    var e_5;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, prisma.user.update({
+                        where: {
+                            id: dataHelper_1.fixId(id),
+                        },
+                        data: {
+                            visibleName: visibleName,
+                        },
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, { result: null, status: 204 }];
+            case 2:
+                e_5 = _a.sent();
+                throw new errorHandler_1.ErrorHandler('cant update comment', 404, e_5.message);
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.showNameUserService = showNameUserService;
 // export const getAllUsers = async () => {
 //     const users = await prisma.user.findMany({})
 //     return { result: users, status: 200 }

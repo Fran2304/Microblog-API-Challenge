@@ -23,7 +23,9 @@ var express_1 = require("express");
 var controller = __importStar(require("../controllers/user.controllers"));
 var router = express_1.Router({ mergeParams: true });
 // /api/account
-router.route('/').patch(controller.updateUser);
+router.route('/');
 // /api/account:id
-router.route('/:id');
+router.route('/:id').patch(controller.updateUser);
+// .patch(controller.showEmail)
+// .patch(controller.showName)
 exports.default = router;

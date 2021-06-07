@@ -58,9 +58,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.signin = exports.signup = exports.verifyToken = exports.newToken = void 0;
+exports.updateUser = exports.signin = exports.signup = exports.verifyToken = exports.newToken = exports.app = void 0;
+var express_1 = __importDefault(require("express"));
+// import express, { NextFunction } from 'express'
 var userService = __importStar(require("../services/users/crudUserService"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// import bodyParser from 'body-parser'
+exports.app = express_1.default();
+// import { PrismaClient } from '@prisma/client' // protect
+// const prisma = new PrismaClient() // protect
 var secrets = {
     jwt: 'gatita',
     jwtExp: '100d',
@@ -143,7 +149,7 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, userService.updateUserService(req.body.email, req.body.bio)];
+                return [4 /*yield*/, userService.updateUserService(req.params.id, req.body)];
             case 1:
                 updatedUser = _a.sent();
                 res.status(updatedUser.status).json({ message: updatedUser.status });
@@ -158,26 +164,58 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.updateUser = updateUser;
-// export const protect = async (req, res, next) => {
+// export const showEmail = async (
+//     req: express.Request,
+//     res: express.Response
+// ) => {
+//     try {
+//         const emailVisible = await userService.showEmailUserService(
+//             req.params.id,
+//             req.body.visibleEmail
+//         )
+//         res.status(emailVisible.status).json({ message: emailVisible.status })
+//     } catch (e) {
+//         console.error(e)
+//         res.status(400).end()
+//     }
+// }
+// export const showName = async (req: express.Request, res: express.Response) => {
+//     try {
+//         const nameVisible = await userService.showNameUserService(
+//             req.params.id,
+//             req.body.visibleName
+//         )
+//         res.status(nameVisible.status).json({ message: nameVisible.status })
+//     } catch (e) {
+//         console.error(e)
+//         res.status(400).end()
+//     }
+// }
+// export const protect = async (
+//     req: express.Request,
+//     res: express.Response,
+//     next: NextFunction
+// ) => {
 //     const bearer = req.headers.authorization
 //     if (!bearer || !bearer.startsWith('Bearer ')) {
 //         return res.status(401).end()
 //     }
-//     const token = bearer.split('Bearer ')[1].trim()
+//     const token = bearer.split('Bearer ')[1]
 //     let payload
 //     try {
 //         payload = await verifyToken(token)
 //     } catch (e) {
 //         return res.status(401).end()
 //     }
-//     const user = await User.findById(payload.id)
-//         .select('-password')
-//         .lean()
-//         .exec()
+//     const user = await prisma.user.findUnique({
+//         where: {
+//             id: payload.id,
+//         },
+//     })
 //     if (!user) {
 //         return res.status(401).end()
 //     }
-//     req.user = user
+//     req.body.user = user
 //     next()
 // }
 // export const getAllUsers = (req: express.Request, res: express.Response) => {

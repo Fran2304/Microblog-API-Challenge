@@ -73,8 +73,8 @@ exports.app.disable('x-powered-by');
 exports.app.use(cors_1.default());
 exports.app.use(body_parser_1.json());
 exports.app.use(body_parser_1.urlencoded({ extended: false }));
-exports.app.post('/signin', user_controllers_1.signin);
 exports.app.post('/signup', user_controllers_1.signup);
+exports.app.post('/signin', user_controllers_1.signin);
 // app.use('/api', protect)
 exports.app.use('/api/accounts', users_router_1.default);
 exports.app.use('/api/accounts/:id/comments', comments_router_1.default);

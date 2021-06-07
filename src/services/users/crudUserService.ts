@@ -29,6 +29,22 @@ export const readUserService = async (params: Iuser) => {
         throw new ErrorHandler('cant get user', 404, e.message)
     }
 }
+
+export const updateUserService = async (email: string, bio: string) => {
+    try {
+        await prisma.user.update({
+            where: {
+                email: email,
+            },
+            data: {
+                bio: bio,
+            },
+        })
+        return { result: null, status: 204 }
+    } catch (e) {
+        throw new ErrorHandler('cant update comment', 404, e.message)
+    }
+}
 // export const getAllUsers = async () => {
 //     const users = await prisma.user.findMany({})
 //     return { result: users, status: 200 }

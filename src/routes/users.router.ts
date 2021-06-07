@@ -6,6 +6,6 @@ const router = Router({ mergeParams: true })
 router.route('/')
 
 // /api/account:id
-router.route('/:id').put(controller.updateUser)
+router.route('/:id').patch(controller.updateUser)
 
 export default router

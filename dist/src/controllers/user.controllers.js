@@ -58,7 +58,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllUsers = exports.updateUser = exports.signin = exports.signup = exports.verifyToken = exports.newToken = void 0;
+exports.updateUser = exports.signin = exports.signup = exports.verifyToken = exports.newToken = void 0;
 var userService = __importStar(require("../services/users/crudUserService"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var secrets = {
@@ -137,6 +137,27 @@ var signin = function (req, res) { return __awaiter(void 0, void 0, void 0, func
     });
 }); };
 exports.signin = signin;
+var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var updatedUser, e_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, userService.updateUserService(req.body.email, req.body.bio)];
+            case 1:
+                updatedUser = _a.sent();
+                res.status(updatedUser.status).json({ message: updatedUser.status });
+                return [3 /*break*/, 3];
+            case 2:
+                e_3 = _a.sent();
+                console.error(e_3);
+                res.status(400).end();
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.updateUser = updateUser;
 // export const protect = async (req, res, next) => {
 //     const bearer = req.headers.authorization
 //     if (!bearer || !bearer.startsWith('Bearer ')) {
@@ -159,11 +180,6 @@ exports.signin = signin;
 //     req.user = user
 //     next()
 // }
-var updateUser = function (req, res) {
-    res.status(200).json({ data: 'hola' });
-};
-exports.updateUser = updateUser;
-var getAllUsers = function (req, res) {
-    res.status(200).json({ data: 'hola' });
-};
-exports.getAllUsers = getAllUsers;
+// export const getAllUsers = (req: express.Request, res: express.Response) => {
+//     res.status(200).json({ data: 'hola' })
+// }

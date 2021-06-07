@@ -23,7 +23,7 @@ var express_1 = require("express");
 var controller = __importStar(require("../controllers/user.controllers"));
 var router = express_1.Router({ mergeParams: true });
 // /api/account
-router.route('/');
+router.route('/').patch(controller.updateUser);
 // /api/account:id
-router.route('/:id').put(controller.updateUser);
+router.route('/:id');
 exports.default = router;

@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readUserService = exports.createUserService = void 0;
+exports.updateUserService = exports.readUserService = exports.createUserService = void 0;
 var client_1 = require("@prisma/client");
 var errorHandler_1 = require("../../interfaces/errorHandler");
 var prisma = new client_1.PrismaClient();
@@ -93,6 +93,31 @@ var readUserService = function (params) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.readUserService = readUserService;
+var updateUserService = function (email, bio) { return __awaiter(void 0, void 0, void 0, function () {
+    var e_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, prisma.user.update({
+                        where: {
+                            email: email,
+                        },
+                        data: {
+                            bio: bio,
+                        },
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, { result: null, status: 204 }];
+            case 2:
+                e_3 = _a.sent();
+                throw new errorHandler_1.ErrorHandler('cant update comment', 404, e_3.message);
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.updateUserService = updateUserService;
 // export const getAllUsers = async () => {
 //     const users = await prisma.user.findMany({})
 //     return { result: users, status: 200 }

@@ -54,6 +54,21 @@ export const signin = async (req: express.Request, res: express.Response) => {
     }
 }
 
+export const updateUser = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const updatedUser = await userService.updateUserService(
+            req.body.email,
+            req.body.bio
+        )
+        res.status(updatedUser.status).json({ message: updatedUser.status })
+    } catch (e) {
+        console.error(e)
+        res.status(400).end()
+    }
+}
 // export const protect = async (req, res, next) => {
 //     const bearer = req.headers.authorization
 
@@ -82,10 +97,6 @@ export const signin = async (req: express.Request, res: express.Response) => {
 //     next()
 // }
 
-export const updateUser = (req: express.Request, res: express.Response) => {
-    res.status(200).json({ data: 'hola' })
-}
-
-export const getAllUsers = (req: express.Request, res: express.Response) => {
-    res.status(200).json({ data: 'hola' })
-}
+// export const getAllUsers = (req: express.Request, res: express.Response) => {
+//     res.status(200).json({ data: 'hola' })
+// }

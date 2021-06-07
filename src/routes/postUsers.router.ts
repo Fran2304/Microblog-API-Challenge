@@ -3,7 +3,11 @@ import * as controller from '../controllers/post.controller'
 
 const router = Router({ mergeParams: true })
 
-router.route('/').get(controller.getPosts)
-router.route('/:commentId').get(controller.readPost)
+router.route('/').post(controller.createPost)
+
+router
+    .route('/:postId')
+    .patch(controller.updatePost)
+    .delete(controller.deletePost)
 
 export default router

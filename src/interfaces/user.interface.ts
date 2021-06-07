@@ -6,4 +6,6 @@ export interface Iuser {
     password: string
     bio?: string
     hashActivation: string
+    visibleEmail: boolean
+    visibleName: boolean
 }

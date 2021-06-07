@@ -56,7 +56,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readComment = exports.getComments = exports.deleteComment = exports.updateComment = exports.createComment = void 0;
-var commentService = __importStar(require("../services/comment/crudCommentService"));
+var commentService = __importStar(require("../services/comments/crudCommentService"));
 var createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var create, err_1;
     return __generator(this, function (_a) {

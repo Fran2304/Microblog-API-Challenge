@@ -3,9 +3,11 @@ import * as controller from '../controllers/user.controllers'
 const router = Router({ mergeParams: true })
 
 // /api/account
-router.route('/').get(controller.getUser).post(controller.createUser)
+router.route('/')
 
 // /api/account:id
-router.route('/:id').put(controller.updateUser).get(controller.getUser)
+router.route('/:id').patch(controller.updateUser)
+// .patch(controller.showEmail)
+// .patch(controller.showName)
 
 export default router

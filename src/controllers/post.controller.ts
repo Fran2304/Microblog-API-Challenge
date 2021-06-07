@@ -1,5 +1,5 @@
 import express from 'express'
-import * as postService from '../services/post/crudPostService'
+import * as postService from '../services/posts/crudPostService'
 
 export const createPost = async (
     req: express.Request,

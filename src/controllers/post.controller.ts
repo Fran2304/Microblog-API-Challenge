@@ -18,12 +18,21 @@ export const updatePost = async (
     res: express.Response
 ) => {
     try {
-        const update = await postService.updatePost(
-            req.params.id,
-            req.params.postId,
-            req.body
-        )
-        res.status(update.status).json({ data: update.status })
+        if (!JSON.stringify(req.body).includes('like')) {
+            const update = await postService.updatePost(
+                req.params.id,
+                req.params.postId,
+                req.body
+            )
+            res.status(update.status).json({ data: update.result })
+        } else {
+            const likePost = await postService.ProcessPostLike(
+                req.params.id,
+                req.params.postId,
+                req.body
+            )
+            res.status(likePost.status).json({ data: likePost.result })
+        }
     } catch (err) {
         res.status(err.status).json({ data: err.message })
     }

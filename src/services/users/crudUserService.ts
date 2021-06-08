@@ -5,6 +5,20 @@ import { fixId } from '../../Helpers/dataHelper'
 
 const prisma = new PrismaClient()
 
+export const userExist = async (authorId: string) => {
+    try {
+        const userFound = await prisma.user.findFirst({
+            where: {
+                id: fixId(authorId),
+            },
+        })
+        return userFound !== null
+    } catch (e) {
+        console.log(e)
+        throw new ErrorHandler('ERROR: cant find user', 404, e.message)
+    }
+}
+
 export const createUserService = async (params: Iuser) => {
     try {
         const createdUser = await prisma.user.create({

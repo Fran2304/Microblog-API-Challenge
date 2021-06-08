@@ -157,3 +157,4 @@ var readComment = function (req, res) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.readComment = readComment;
+//# sourceMappingURL=comment.controller.js.map

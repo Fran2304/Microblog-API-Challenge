@@ -25,3 +25,4 @@ var router = express_1.Router();
 router.route('/').get(controller.getPosts);
 router.route('/:id').get(controller.readPost);
 exports.default = router;
+//# sourceMappingURL=posts.router.js.map

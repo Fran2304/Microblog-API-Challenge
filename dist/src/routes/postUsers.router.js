@@ -28,3 +28,4 @@ router
     .patch(controller.updatePost)
     .delete(controller.deletePost);
 exports.default = router;
+//# sourceMappingURL=postUsers.router.js.map

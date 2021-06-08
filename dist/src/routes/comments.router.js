@@ -25,3 +25,4 @@ var router = express_1.Router({ mergeParams: true });
 router.route('/').get(controller.getPosts);
 router.route('/:commentId').get(controller.readPost);
 exports.default = router;
+//# sourceMappingURL=comments.router.js.map

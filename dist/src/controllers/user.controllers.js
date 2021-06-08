@@ -58,29 +58,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.signin = exports.signup = exports.verifyToken = exports.newToken = exports.app = void 0;
-var express_1 = __importDefault(require("express"));
+exports.updateUser = exports.signin = exports.signup = exports.verifyToken = exports.newToken = void 0;
 // import express, { NextFunction } from 'express'
 var userService = __importStar(require("../services/users/crudUserService"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-// import bodyParser from 'body-parser'
-exports.app = express_1.default();
+var config_1 = __importDefault(require("../../config"));
 // import { PrismaClient } from '@prisma/client' // protect
 // const prisma = new PrismaClient() // protect
-var secrets = {
-    jwt: 'gatita',
-    jwtExp: '100d',
-};
+// interface IPayload {
+//     sub: string
+//     id: number
+//     iat: string
+// }
 var newToken = function (userId) {
-    return jsonwebtoken_1.default.sign({ id: userId }, secrets.jwt, {
-        expiresIn: secrets.jwtExp,
+    return jsonwebtoken_1.default.sign({ id: userId }, config_1.default.secrets.jwt, {
+        expiresIn: config_1.default.secrets.jwtExp,
     });
 };
 exports.newToken = newToken;
 // ojito con el type token
 var verifyToken = function (token) {
     return new Promise(function (resolve, reject) {
-        jsonwebtoken_1.default.verify(token, secrets.jwt, function (err, payload) {
+        jsonwebtoken_1.default.verify(token, config_1.default.secrets.jwt, function (err, payload) {
             if (err)
                 return reject(err);
             resolve(payload);
@@ -103,7 +102,9 @@ var signup = function (req, res) { return __awaiter(void 0, void 0, void 0, func
             case 2:
                 user = _a.sent();
                 token = exports.newToken(user.result.id);
-                return [2 /*return*/, res.status(201).send({ token: token })];
+                return [2 /*return*/, res
+                        .status(user.status)
+                        .json({ mensaje: 'Complete registration', token: token })];
             case 3:
                 e_1 = _a.sent();
                 console.error(e_1);
@@ -114,7 +115,7 @@ var signup = function (req, res) { return __awaiter(void 0, void 0, void 0, func
 }); };
 exports.signup = signup;
 var signin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var invalid, user, e_2;
+    var invalid, user, token, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -128,11 +129,13 @@ var signin = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                 return [4 /*yield*/, userService.readUserService(req.body)];
             case 2:
                 user = _a.sent();
-                if (!user) {
+                if (!user.result) {
                     return [2 /*return*/, res.status(401).send(invalid)];
                 }
-                // const token = newToken(user.result)
-                return [2 /*return*/, res.status(201).send({ user: user })];
+                token = exports.newToken(user.result);
+                return [2 /*return*/, res
+                        .status(201)
+                        .json({ mensaje: 'Autenticación correcta', token: token })];
             case 3:
                 e_2 = _a.sent();
                 console.error(e_2);
@@ -164,33 +167,23 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.updateUser = updateUser;
-// export const showEmail = async (
-//     req: express.Request,
-//     res: express.Response
-// ) => {
-//     try {
-//         const emailVisible = await userService.showEmailUserService(
-//             req.params.id,
-//             req.body.visibleEmail
-//         )
-//         res.status(emailVisible.status).json({ message: emailVisible.status })
-//     } catch (e) {
-//         console.error(e)
-//         res.status(400).end()
+// export const protect = async (req: express.Request, res: express. Response, next: NextFunction) => {
+//     const token = req.headers ['access-token'];
+//     if (token) {
+//       jwt.verify (token, app.get('secrets'), (err , decoded) => {
+//         if (err) {
+//           return res.json ({mensaje: 'Token inválida'});
+//         } else {
+//           req.body.user = user;
+//           next ();
+//         }
+//       });
+//     } else {
+//       res.send ( {
+//           mensaje: 'Token no proveída.'
+//       });
 //     }
-// }
-// export const showName = async (req: express.Request, res: express.Response) => {
-//     try {
-//         const nameVisible = await userService.showNameUserService(
-//             req.params.id,
-//             req.body.visibleName
-//         )
-//         res.status(nameVisible.status).json({ message: nameVisible.status })
-//     } catch (e) {
-//         console.error(e)
-//         res.status(400).end()
-//     }
-// }
+// };
 // export const protect = async (
 //     req: express.Request,
 //     res: express.Response,
@@ -218,6 +211,4 @@ exports.updateUser = updateUser;
 //     req.body.user = user
 //     next()
 // }
-// export const getAllUsers = (req: express.Request, res: express.Response) => {
-//     res.status(200).json({ data: 'hola' })
-// }
+//# sourceMappingURL=user.controllers.js.map

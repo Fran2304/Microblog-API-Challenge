@@ -2,28 +2,27 @@ import express from 'express'
 // import express, { NextFunction } from 'express'
 import * as userService from '../services/users/crudUserService'
 import jwt from 'jsonwebtoken'
-// import bodyParser from 'body-parser'
-
-export const app = express()
+import config from '../../config'
 
 // import { PrismaClient } from '@prisma/client' // protect
 // const prisma = new PrismaClient() // protect
 
-const secrets = {
-    jwt: 'gatita',
-    jwtExp: '100d',
-}
+// interface IPayload {
+//     sub: string
+//     id: number
+//     iat: string
+// }
 
 export const newToken = (userId: number) => {
-    return jwt.sign({ id: userId }, secrets.jwt, {
-        expiresIn: secrets.jwtExp,
+    return jwt.sign({ id: userId }, config.secrets.jwt as string, {
+        expiresIn: config.secrets.jwtExp,
     })
 }
 
 // ojito con el type token
 export const verifyToken = (token: string) =>
     new Promise((resolve, reject) => {
-        jwt.verify(token, secrets.jwt, (err, payload) => {
+        jwt.verify(token, config.secrets.jwt as string, (err, payload) => {
             if (err) return reject(err)
             resolve(payload)
         })
@@ -36,7 +35,9 @@ export const signup = async (req: express.Request, res: express.Response) => {
     try {
         const user = await userService.createUserService(req.body)
         const token = newToken(user.result.id)
-        return res.status(201).send({ token })
+        return res
+            .status(user.status)
+            .json({ mensaje: 'Complete registration', token: token })
     } catch (e) {
         console.error(e)
         return res.status(500).end()
@@ -50,11 +51,13 @@ export const signin = async (req: express.Request, res: express.Response) => {
     const invalid = { message: 'Invalid email and passoword combination' }
     try {
         const user = await userService.readUserService(req.body)
-        if (!user) {
+        if (!user.result) {
             return res.status(401).send(invalid)
         }
-        // const token = newToken(user.result)
-        return res.status(201).send({ user })
+        const token = newToken(user.result)
+        return res
+            .status(201)
+            .json({ mensaje: 'Autenticación correcta', token: token })
     } catch (e) {
         console.error(e)
         res.status(500).end()
@@ -77,34 +80,24 @@ export const updateUser = async (
     }
 }
 
-// export const showEmail = async (
-//     req: express.Request,
-//     res: express.Response
-// ) => {
-//     try {
-//         const emailVisible = await userService.showEmailUserService(
-//             req.params.id,
-//             req.body.visibleEmail
-//         )
-//         res.status(emailVisible.status).json({ message: emailVisible.status })
-//     } catch (e) {
-//         console.error(e)
-//         res.status(400).end()
+// export const protect = async (req: express.Request, res: express. Response, next: NextFunction) => {
+//     const token = req.headers ['access-token'];
+//     if (token) {
+//       jwt.verify (token, app.get('secrets'), (err , decoded) => {
+//         if (err) {
+//           return res.json ({mensaje: 'Token inválida'});
+//         } else {
+//           req.body.user = user;
+//           next ();
+//         }
+//       });
+//     } else {
+//       res.send ( {
+//           mensaje: 'Token no proveída.'
+//       });
 //     }
-// }
+// };
 
-// export const showName = async (req: express.Request, res: express.Response) => {
-//     try {
-//         const nameVisible = await userService.showNameUserService(
-//             req.params.id,
-//             req.body.visibleName
-//         )
-//         res.status(nameVisible.status).json({ message: nameVisible.status })
-//     } catch (e) {
-//         console.error(e)
-//         res.status(400).end()
-//     }
-// }
 // export const protect = async (
 //     req: express.Request,
 //     res: express.Response,
@@ -136,8 +129,4 @@ export const updateUser = async (
 
 //     req.body.user = user
 //     next()
-// }
-
-// export const getAllUsers = (req: express.Request, res: express.Response) => {
-//     res.status(200).json({ data: 'hola' })
 // }

@@ -58,10 +58,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.app = void 0;
+exports.start = exports.app = void 0;
 var cors_1 = __importDefault(require("cors"));
 var express_1 = __importDefault(require("express"));
 var body_parser_1 = require("body-parser");
+var config_1 = __importDefault(require("./config"));
 var users_router_1 = __importDefault(require("./src/routes/users.router"));
 var postUsers_router_1 = __importDefault(require("./src/routes/postUsers.router"));
 var posts_router_1 = __importDefault(require("./src/routes/posts.router"));
@@ -71,6 +72,7 @@ var dotenv = __importStar(require("dotenv"));
 var user_controllers_1 = require("./src/controllers/user.controllers");
 dotenv.config();
 exports.app = express_1.default();
+exports.app.set('secrets', config_1.default.secrets.jwt);
 exports.app.disable('x-powered-by');
 exports.app.use(cors_1.default());
 exports.app.use(body_parser_1.json());
@@ -83,14 +85,11 @@ exports.app.use('/api/accounts/:id/posts', postUsers_router_1.default);
 exports.app.use('/api/posts', posts_router_1.default);
 exports.app.use('/api/accounts/:id/posts/:postId', commentUsers_router_1.default);
 exports.app.use('/api/posts/:postId/comments', comments_router_1.default);
-// Start server
-// eslint-disable-next-line no-undef
-var port = process.env.PORT;
 var start = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         try {
-            exports.app.listen(port, function () {
-                console.log("REST API on http://localhost:" + port + "/");
+            exports.app.listen(config_1.default.port, function () {
+                console.log("REST API on http://localhost:" + config_1.default.port + "/");
             });
         }
         catch (e) {
@@ -99,4 +98,6 @@ var start = function () { return __awaiter(void 0, void 0, void 0, function () {
         return [2 /*return*/];
     });
 }); };
-start();
+exports.start = start;
+exports.start();
+//# sourceMappingURL=server.js.map

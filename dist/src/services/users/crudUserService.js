@@ -171,3 +171,4 @@ exports.showNameUserService = showNameUserService;
 //     const users = await prisma.user.findMany({})
 //     return { result: users, status: 200 }
 // }
+//# sourceMappingURL=crudUserService.js.map

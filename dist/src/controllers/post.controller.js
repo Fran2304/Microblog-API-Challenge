@@ -157,3 +157,4 @@ var readPost = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     });
 }); };
 exports.readPost = readPost;
+//# sourceMappingURL=post.controller.js.map

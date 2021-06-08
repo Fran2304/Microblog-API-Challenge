@@ -29,3 +29,4 @@ router.route('/:id').patch(controller.updateUser);
 // .patch(controller.showEmail)
 // .patch(controller.showName)
 exports.default = router;
+//# sourceMappingURL=users.router.js.map

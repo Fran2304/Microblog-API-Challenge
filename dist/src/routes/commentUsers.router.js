@@ -28,3 +28,4 @@ router
     .patch(controller.updateComment)
     .delete(controller.deleteComment);
 exports.default = router;
+//# sourceMappingURL=commentUsers.router.js.map

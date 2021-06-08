@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable no-undef */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -19,10 +20,32 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
-var controller = __importStar(require("../controllers/post.controller"));
-var router = express_1.Router();
-router.route('/').get(controller.getPosts);
-router.route('/:id').get(controller.readPost);
-exports.default = router;
-//# sourceMappingURL=posts.router.js.map
+var lodash_1 = require("lodash");
+var devEnv = __importStar(require("./dev"));
+var testEnv = __importStar(require("./test"));
+var env = process.env.PORT || 'development';
+var baseConfig = {
+    env: env,
+    isDev: env === 'development',
+    isTest: env === 'testing',
+    port: 3002,
+    secrets: {
+        jwt: process.env.JWT_SECRET,
+        jwtExp: '100d',
+    },
+};
+var envConfig = {};
+switch (env) {
+    case 'dev':
+    case 'development':
+        envConfig = devEnv.config;
+        break;
+    case 'test':
+    case 'testing':
+        envConfig = testEnv.config;
+        break;
+    default:
+        envConfig = devEnv.config;
+}
+exports.default = lodash_1.merge(baseConfig, envConfig);
+//# sourceMappingURL=index.js.map

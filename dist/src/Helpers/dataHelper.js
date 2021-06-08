@@ -5,3 +5,4 @@ var fixId = function (idString) {
     return Number.parseInt(idString);
 };
 exports.fixId = fixId;
+//# sourceMappingURL=dataHelper.js.map

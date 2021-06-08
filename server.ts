@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express from 'express'
 import { json, urlencoded } from 'body-parser'
+import config from './config'
 import usersRouter from './src/routes/users.router'
 import postsUserRouter from './src/routes/postUsers.router'
 import postsRouter from './src/routes/posts.router'
@@ -15,10 +16,13 @@ dotenv.config()
 
 export const app = express()
 
+app.set('secrets', config.secrets.jwt)
+
 app.disable('x-powered-by')
 
 app.use(cors())
 app.use(json())
+
 app.use(urlencoded({ extended: false }))
 
 app.post('/signup', signup)
@@ -32,14 +36,10 @@ app.use('/api/posts', postsRouter)
 app.use('/api/accounts/:id/posts/:postId', commentsUserRouter)
 app.use('/api/posts/:postId/comments', commentsRouter)
 
-// Start server
-// eslint-disable-next-line no-undef
-const port = process.env.PORT
-
-const start = async () => {
+export const start = async () => {
     try {
-        app.listen(port, () => {
-            console.log(`REST API on http://localhost:${port}/`)
+        app.listen(config.port, () => {
+            console.log(`REST API on http://localhost:${config.port}/`)
         })
     } catch (e) {
         console.error(e)

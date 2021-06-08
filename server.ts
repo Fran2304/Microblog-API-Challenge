@@ -10,7 +10,7 @@ import commentsRouter from './src/routes/comments.router'
 
 import * as dotenv from 'dotenv'
 
-import { signin, signup } from './src/controllers/user.controllers'
+import { signin, signup } from './src/controllers/auth.controllers'
 
 dotenv.config()
 

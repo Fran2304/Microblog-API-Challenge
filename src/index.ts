@@ -1,1 +1,2 @@
-console.log('inicio')
+import { start } from '../server'
+console.log(start)

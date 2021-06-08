@@ -161,9 +161,12 @@ export const ProcessPostLike = async (
                 status: 404,
             }
         }
+        console.log(like)
         if (like) {
+            console.log('like')
             likePost(fixId(id), fixId(postId), post.likesQuantity)
         } else {
+            console.log('dislike')
             if (post.likesQuantity != 0) {
                 dislikePost(fixId(id), fixId(postId), post.likesQuantity)
             }
@@ -213,12 +216,14 @@ const dislikePost = async (
     quantity: number
 ) => {
     try {
+        console.log('entro al dislike')
         const postLike = await prisma.postLikes.findFirst({
             where: {
                 postId: postId,
                 authorId: authorId,
             },
         })
+        console.log(postLike)
         if (postLike == null) {
             return {
                 result: 'cant dislike a post that was not previously liked for user',

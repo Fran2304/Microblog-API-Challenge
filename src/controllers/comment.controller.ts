@@ -28,7 +28,7 @@ export const updateComment = async (
             req.params.commentId,
             req.body
         )
-        res.status(update.status).json({ data: update.status })
+        res.status(update.status).json({ data: update.result })
     } catch (err) {
         res.status(err.status).json({ data: err.message })
     }

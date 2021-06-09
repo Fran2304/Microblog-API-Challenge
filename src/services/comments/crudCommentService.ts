@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { commentType } from '../../type/types'
+import { commentType, likeJson } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 
@@ -189,9 +189,6 @@ export const readComment = async (postId: string, commentId: string) => {
     }
 }
 
-type likeJson = {
-    like: boolean
-}
 export const ProcessCommentLike = async (
     authorId: string,
     commentId: string,

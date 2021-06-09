@@ -23,3 +23,7 @@ export type userType = {
     visibleEmail: boolean
     visibleName: boolean
 }
+
+export type likeJson = {
+    like: boolean
+}

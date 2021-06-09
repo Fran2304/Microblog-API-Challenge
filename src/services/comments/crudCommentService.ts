@@ -188,3 +188,119 @@ export const readComment = async (postId: string, commentId: string) => {
         throw new ErrorHandler('ERROR: cant read comment', 404, e.message)
     }
 }
+
+type likeJson = {
+    like: boolean
+}
+export const ProcessCommentLike = async (
+    authorId: string,
+    commentId: string,
+    likeData: likeJson
+) => {
+    try {
+        let comment = await prisma.comment.findFirst({
+            where: {
+                id: fixId(commentId),
+            },
+        })
+        if (comment == null) {
+            return {
+                result: 'cant like a comment that does not exist ',
+                status: 404,
+            }
+        }
+        if (likeData.like) {
+            likeComment(
+                fixId(authorId),
+                fixId(commentId),
+                comment.likesQuantity
+            )
+        } else {
+            if (comment.likesQuantity != 0) {
+                dislikeComment(
+                    fixId(authorId),
+                    fixId(commentId),
+                    comment.likesQuantity
+                )
+            }
+        }
+
+        return { result: null, status: 204 }
+    } catch (e) {
+        console.log(e.message)
+        throw new ErrorHandler('ERROR: cant like comment', 404, e.message)
+    }
+}
+
+const likeComment = async (
+    authorId: number,
+    commentId: number,
+    quantity: number
+) => {
+    try {
+        const commentLike = await prisma.commentLikes.findFirst({
+            where: {
+                commentId: commentId,
+                authorId: authorId,
+            },
+        })
+
+        if (commentLike == null) {
+            await prisma.comment.update({
+                where: {
+                    id: commentId,
+                },
+                data: {
+                    likesQuantity: quantity + 1,
+                },
+            })
+            await prisma.commentLikes.create({
+                data: {
+                    commentId: commentId,
+                    authorId: authorId,
+                    like: true,
+                },
+            })
+        }
+    } catch (e) {
+        console.log(e.message)
+        throw new ErrorHandler('ERROR: cant like comment', 404, e.message)
+    }
+}
+
+const dislikeComment = async (
+    authorId: number,
+    commentId: number,
+    quantity: number
+) => {
+    try {
+        const commentLike = await prisma.commentLikes.findFirst({
+            where: {
+                commentId: commentId,
+                authorId: authorId,
+            },
+        })
+        if (commentLike == null) {
+            return {
+                result: 'cant dislike a comment that was not previously liked for user',
+                status: 404,
+            }
+        }
+        await prisma.comment.update({
+            where: {
+                id: commentId,
+            },
+            data: {
+                likesQuantity: quantity - 1,
+            },
+        })
+        await prisma.commentLikes.delete({
+            where: {
+                id: commentLike?.id,
+            },
+        })
+    } catch (e) {
+        console.log(e.message)
+        throw new ErrorHandler('ERROR: cant dislike comment', 404, e.message)
+    }
+}

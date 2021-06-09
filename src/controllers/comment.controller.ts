@@ -22,13 +22,22 @@ export const updateComment = async (
     res: express.Response
 ) => {
     try {
-        const update = await commentService.updateComment(
-            req.params.id,
-            req.params.postId,
-            req.params.commentId,
-            req.body
-        )
-        res.status(update.status).json({ data: update.result })
+        if (!JSON.stringify(req.body).includes('like')) {
+            const update = await commentService.updateComment(
+                req.params.id,
+                req.params.postId,
+                req.params.commentId,
+                req.body
+            )
+            res.status(update.status).json({ data: update.result })
+        } else {
+            const likeComment = await commentService.ProcessCommentLike(
+                req.params.id,
+                req.params.postId,
+                req.body
+            )
+            res.status(likeComment.status).json({ data: likeComment.result })
+        }
     } catch (err) {
         res.status(err.status).json({ data: err.message })
     }

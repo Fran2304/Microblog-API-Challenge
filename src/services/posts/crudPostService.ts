@@ -2,15 +2,11 @@ import { PrismaClient } from '@prisma/client'
 import { Ipost } from '../../interfaces/post.interface'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
-import { userExist } from '../users/crudUserService'
 
 const prisma = new PrismaClient()
 
 export const createPost = async (authorId: string, params: Ipost) => {
     try {
-        // if (!userExist(authorId)) {
-        //     return { result: 'user does not exist', status: 404 }
-        // }
         const today: Date = new Date()
         await prisma.post.create({
             data: {
@@ -140,16 +136,15 @@ export const readPost = async (id: string) => {
     }
 }
 
+type likeJson = {
+    like: boolean
+}
 export const ProcessPostLike = async (
     id: string,
     postId: string,
-    like: boolean
+    likeData: likeJson
 ) => {
     try {
-        const userValid = await userExist(id)
-        if (!userValid) {
-            return { result: 'user does not exist', status: 404 }
-        }
         let post = await prisma.post.findFirst({
             where: {
                 id: fixId(postId),
@@ -161,12 +156,9 @@ export const ProcessPostLike = async (
                 status: 404,
             }
         }
-        console.log(like)
-        if (like) {
-            console.log('like')
+        if (likeData.like) {
             likePost(fixId(id), fixId(postId), post.likesQuantity)
         } else {
-            console.log('dislike')
             if (post.likesQuantity != 0) {
                 dislikePost(fixId(id), fixId(postId), post.likesQuantity)
             }
@@ -193,7 +185,7 @@ const likePost = async (authorId: number, postId: number, quantity: number) => {
                     id: postId,
                 },
                 data: {
-                    likesQuantity: quantity++,
+                    likesQuantity: quantity + 1,
                 },
             })
             await prisma.postLikes.create({
@@ -206,7 +198,7 @@ const likePost = async (authorId: number, postId: number, quantity: number) => {
         }
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant update post', 404, e.message)
+        throw new ErrorHandler('ERROR: cant like post', 404, e.message)
     }
 }
 
@@ -216,28 +208,24 @@ const dislikePost = async (
     quantity: number
 ) => {
     try {
-        console.log('entro al dislike')
         const postLike = await prisma.postLikes.findFirst({
             where: {
                 postId: postId,
                 authorId: authorId,
             },
         })
-        console.log(postLike)
         if (postLike == null) {
             return {
                 result: 'cant dislike a post that was not previously liked for user',
                 status: 404,
             }
         }
-        console.log('before update')
-        console.log(quantity)
         await prisma.post.update({
             where: {
                 id: postId,
             },
             data: {
-                likesQuantity: quantity--,
+                likesQuantity: quantity - 1,
             },
         })
         await prisma.postLikes.delete({

@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client'
-import { Ipost } from '../../interfaces/post.interface'
+import { postType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 import { userExist } from '../users/crudUserService'
 
 const prisma = new PrismaClient()
 
-export const createPost = async (authorId: string, params: Ipost) => {
+export const createPost = async (authorId: string, params: postType) => {
     try {
         // if (!userExist(authorId)) {
         //     return { result: 'user does not exist', status: 404 }
@@ -28,7 +28,11 @@ export const createPost = async (authorId: string, params: Ipost) => {
     }
 }
 
-export const updatePost = async (id: string, postId: string, params: Ipost) => {
+export const updatePost = async (
+    id: string,
+    postId: string,
+    params: postType
+) => {
     try {
         let postToUpdate = await prisma.post.findFirst({
             where: {
@@ -76,10 +80,11 @@ export const deletePost = async (id: string, postId: string) => {
             },
         })
         if (postToDelete == null) {
-            return {
-                result: 'cant delete a post that does not exist',
-                status: 404,
-            }
+            throw new ErrorHandler(
+                'ERROR: cant delete a post',
+                404,
+                'cant delete a post that does not exist'
+            )
         }
         postToDelete = await prisma.post.findFirst({
             where: {
@@ -88,10 +93,11 @@ export const deletePost = async (id: string, postId: string) => {
             },
         })
         if (postToDelete == null) {
-            return {
-                result: 'cant delete a post that does not belongs to user',
-                status: 404,
-            }
+            throw new ErrorHandler(
+                'ERROR: cant delete a post',
+                404,
+                'cant delete a post that does not belongs to user'
+            )
         }
         await prisma.post.delete({
             where: {

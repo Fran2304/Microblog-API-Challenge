@@ -21,6 +21,27 @@ const prisma = new PrismaClient()
 //     hashActivation: '222222222',
 // }
 
+// describe('read a comment', () => {
+//     it('should return a coment', async () => {
+//         // const comment = await readComment('2')
+//         const comment = await prisma.comment.findFirst({
+//             where: {
+//                 id: 2,
+//             },
+//         })
+//         const expected = {
+//             id: 2,
+//             createdAt: new Date('2021-02-12T05:00:00.000Z'),
+//             content: 'pasame la receta',
+//             published: true,
+//             likesQuantity: 0,
+//             authorId: 2,
+//             postId: 1,
+//         }
+//         expect(comment).toEqual(expected)
+//     })
+// })
+
 describe('read a comment', () => {
     it('should return a coment', async () => {
         // const comment = await readComment('2')

@@ -1,25 +1,11 @@
 import { PrismaClient } from '@prisma/client'
-import { Iuser } from '../../interfaces/user.interface'
+import { userType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 
 const prisma = new PrismaClient()
 
-export const userExist = async (authorId: string) => {
-    try {
-        const userFound = await prisma.user.findFirst({
-            where: {
-                id: fixId(authorId),
-            },
-        })
-        return userFound !== null
-    } catch (e) {
-        console.log(e)
-        throw new ErrorHandler('ERROR: cant find user', 404, e.message)
-    }
-}
-
-export const createUserService = async (params: Iuser) => {
+export const createUserService = async (params: userType) => {
     try {
         const createdUser = await prisma.user.create({
             data: {
@@ -32,7 +18,7 @@ export const createUserService = async (params: Iuser) => {
     }
 }
 
-export const readUserService = async (params: Iuser) => {
+export const readUserService = async (params: userType) => {
     try {
         const readUser = await prisma.user.findUnique({
             where: {
@@ -45,7 +31,7 @@ export const readUserService = async (params: Iuser) => {
     }
 }
 
-export const updateUserService = async (id: string, params: Iuser) => {
+export const updateUserService = async (id: string, params: userType) => {
     try {
         await prisma.user.update({
             where: {

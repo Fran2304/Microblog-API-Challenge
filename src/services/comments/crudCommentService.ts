@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client'
-import { Icomment } from '../../interfaces/comment.interface'
+import { commentType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 
 const prisma = new PrismaClient()
 
-export const createComment = async (authorId: string, params: Icomment) => {
+export const createComment = async (authorId: string, params: commentType) => {
     try {
         const today: Date = new Date()
         await prisma.comment.create({
@@ -27,7 +27,7 @@ export const createComment = async (authorId: string, params: Icomment) => {
 export const updateComment = async (
     id: string,
     commentId: string,
-    params: Icomment
+    params: commentType
 ) => {
     try {
         let commentToUpdate = await prisma.comment.findFirst({

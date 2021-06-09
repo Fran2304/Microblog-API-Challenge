@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client'
-import { Iuser } from '../../interfaces/user.interface'
+import { userType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 
 const prisma = new PrismaClient()
 
-export const createUserService = async (params: Iuser) => {
+export const createUserService = async (params: userType) => {
     try {
         const createdUser = await prisma.user.create({
             data: {
@@ -18,7 +18,7 @@ export const createUserService = async (params: Iuser) => {
     }
 }
 
-export const readUserService = async (params: Iuser) => {
+export const readUserService = async (params: userType) => {
     try {
         const readUser = await prisma.user.findUnique({
             where: {
@@ -31,7 +31,7 @@ export const readUserService = async (params: Iuser) => {
     }
 }
 
-export const updateUserService = async (id: string, params: Iuser) => {
+export const updateUserService = async (id: string, params: userType) => {
     try {
         await prisma.user.update({
             where: {

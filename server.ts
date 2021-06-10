@@ -59,10 +59,8 @@ app.use(errorManager)
 
 export const start = async () => {
     try {
-
         app.listen(port, () => {
             console.log(`REST API on http://localhost:${port}/`)
-
         })
     } catch (e) {
         console.error(e)

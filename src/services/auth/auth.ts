@@ -4,19 +4,25 @@ import { userType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { plainToClass } from 'class-transformer'
 import { UserDto } from '../../Dtos/userDto'
+import { generateHash } from '../../Helpers/createHashHelper'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
 const generatePassword = async (plainTextPassword: string): Promise<string> => {
-    bcrypt.hash(plainTextPassword, 8, (err, hash) => {
-        if (err) {
-            return plainTextPassword
-        }
-        return hash
+    return new Promise((resolve) => {
+        bcrypt.hash(plainTextPassword, 8, (err, hash) => {
+            if (err) {
+                throw new ErrorHandler(
+                    'ERROR: Passwords dont match',
+                    409,
+                    err.message
+                )
+            }
+            resolve(hash)
+        })
     })
-    return plainTextPassword
 }
 
 export const newToken = (userId: number) => {
@@ -60,17 +66,13 @@ export const createUserService = async (params: userType) => {
             data: {
                 ...params,
                 password: passwordHashed,
-                hashActivation: '12345',
+                hashActivation: generateHash(),
             },
         })
         return { result: plainToClass(UserDto, createdUser), status: 201 }
     } catch (e) {
         console.log(e)
-        throw new ErrorHandler(
-            'Error creating the user',
-            e.status ?? 404,
-            e.message
-        )
+        throw new ErrorHandler(e.message, e.status ?? 404, e)
     }
 }
 

@@ -11,6 +11,17 @@ export const createComment = async (
     params: commentType
 ) => {
     try {
+        if (!params.content) {
+            throw new ErrorHandler('Content cant be empty', 411, '')
+        }
+        const post = await prisma.post.findFirst({
+            where: {
+                id: fixId(postId),
+            },
+        })
+        if (post == null) {
+            throw new Error('ERROR: the post that does not exist')
+        }
         const today: Date = new Date()
         await prisma.comment.create({
             data: {
@@ -24,7 +35,7 @@ export const createComment = async (
         })
         return { result: null, status: 204 }
     } catch (e) {
-        throw new ErrorHandler('ERROR: cant create comment', 404, e)
+        throw new ErrorHandler(e.message, e.status ?? 404, e)
     }
 }
 

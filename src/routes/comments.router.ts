@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import * as controller from '../controllers/comment.controller'
+import asyncHandler from 'express-async-handler'
+import { getComments, readComment } from '../controllers/comment.controller'
 
 const router = Router({ mergeParams: true })
 
-router.route('/').get(controller.getComments)
-router.route('/:commentId').get(controller.readComment)
+router.route('/').get(asyncHandler(getComments))
+router.route('/:commentId').get(asyncHandler(readComment))
 
 export default router

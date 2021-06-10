@@ -2,7 +2,6 @@
 import cors from 'cors'
 import express, { Request, Response, NextFunction } from 'express'
 import { json, urlencoded } from 'body-parser'
-// import config from './config'
 import usersRouter from './src/routes/users.router'
 import postsUserRouter from './src/routes/postUsers.router'
 import postsRouter from './src/routes/posts.router'
@@ -23,7 +22,7 @@ export const app = express()
 
 app.set('secrets', process.env.JWT_SECRET)
 
-app.disable('x-powered-by') //esto que es?
+app.disable('x-powered-by')
 
 app.use(cors())
 app.use(json())
@@ -62,8 +61,10 @@ app.use(errorManager)
 
 export const start = async () => {
     try {
+
         app.listen(port, () => {
             console.log(`REST API on http://localhost:${port}/`)
+
         })
     } catch (e) {
         console.error(e)

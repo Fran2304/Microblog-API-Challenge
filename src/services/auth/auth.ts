@@ -24,8 +24,11 @@ export const readUserService = async (params: userType) => {
                 email: params.email,
             },
         })
-        return { result: readUser?.id, status: 200 }
+        if (readUser == null) {
+            throw new Error('ERROR: the post that does not exist')
+        }
+        return { result: readUser.id, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('cant get user', 404, e.message)
+        throw new ErrorHandler(e.message, 401, e)
     }
 }

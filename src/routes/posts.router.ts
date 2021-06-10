@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import * as controller from '../controllers/post.controller'
+import asyncHandler from 'express-async-handler'
+import { getPosts, readPost } from '../controllers/post.controller'
 
 const router = Router()
 
-router.route('/').get(controller.getPosts)
-router.route('/:id').get(controller.readPost)
+router.route('/').get(asyncHandler(getPosts))
+router.route('/:id').get(asyncHandler(readPost))
 
 export default router

@@ -24,8 +24,7 @@ export const createComment = async (
         })
         return { result: null, status: 204 }
     } catch (e) {
-        console.log(e.message)
-        throw new ErrorHandler('ERROR: cant create comment', 404, e.message)
+        throw new ErrorHandler('ERROR: cant create comment', 404, e)
     }
 }
 
@@ -42,10 +41,7 @@ export const updateComment = async (
             },
         })
         if (commentToUpdate == null) {
-            return {
-                result: 'cant update a comment that does not exist ',
-                status: 404,
-            }
+            throw new Error('cant update a comment that does not exist ')
         }
         commentToUpdate = await prisma.comment.findFirst({
             where: {
@@ -54,11 +50,11 @@ export const updateComment = async (
             },
         })
         if (commentToUpdate == null) {
-            return {
-                result: 'cant update comment because its not related to post',
-                status: 404,
-            }
+            throw new Error(
+                'cant update comment because its not related to post'
+            )
         }
+
         commentToUpdate = await prisma.comment.findFirst({
             where: {
                 id: fixId(commentId),
@@ -67,10 +63,7 @@ export const updateComment = async (
             },
         })
         if (commentToUpdate == null) {
-            return {
-                result: 'cant update comment that does not belongs to user',
-                status: 404,
-            }
+            throw new Error('cant update comment that does not belongs to user')
         }
         await prisma.comment.update({
             where: {
@@ -83,7 +76,7 @@ export const updateComment = async (
         return { result: null, status: 204 }
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant update comment', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -99,10 +92,7 @@ export const deleteComment = async (
             },
         })
         if (commentToDelete == null) {
-            return {
-                result: 'cant delete a comment that does not exist',
-                status: 404,
-            }
+            throw new Error('cant delete a comment that does not exist')
         }
         commentToDelete = await prisma.comment.findFirst({
             where: {
@@ -111,10 +101,9 @@ export const deleteComment = async (
             },
         })
         if (commentToDelete == null) {
-            return {
-                result: 'cant delete comment because its not related to post',
-                status: 404,
-            }
+            throw new Error(
+                'cant delete comment because its not related to post'
+            )
         }
         commentToDelete = await prisma.comment.findFirst({
             where: {
@@ -124,10 +113,9 @@ export const deleteComment = async (
             },
         })
         if (commentToDelete == null) {
-            return {
-                result: 'cant delete a comment that does not belongs to user',
-                status: 404,
-            }
+            throw new Error(
+                'cant delete a comment that does not belongs to user'
+            )
         }
         await prisma.comment.delete({
             where: {
@@ -137,7 +125,7 @@ export const deleteComment = async (
         return { result: commentToDelete, status: 200 }
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant delete comment', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -154,7 +142,7 @@ export const readPublishedComments = async (postId: string) => {
         }
         return { result: comments, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('ERROR: cant get comments', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -166,10 +154,7 @@ export const readComment = async (postId: string, commentId: string) => {
             },
         })
         if (comment == null) {
-            return {
-                result: 'comment that does not exist',
-                status: 404,
-            }
+            throw new Error('comment that does not exist')
         }
         comment = await prisma.comment.findFirst({
             where: {
@@ -178,14 +163,11 @@ export const readComment = async (postId: string, commentId: string) => {
             },
         })
         if (comment == null) {
-            return {
-                result: 'comment is not related to post',
-                status: 404,
-            }
+            throw new Error('comment is not related to post')
         }
         return { result: comment, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('ERROR: cant read comment', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -201,10 +183,7 @@ export const ProcessCommentLike = async (
             },
         })
         if (comment == null) {
-            return {
-                result: 'cant like a comment that does not exist ',
-                status: 404,
-            }
+            throw new Error('cant like a comment that does not exist ')
         }
         if (likeData.like) {
             likeComment(
@@ -225,7 +204,7 @@ export const ProcessCommentLike = async (
         return { result: null, status: 204 }
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant like comment', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -261,7 +240,7 @@ const likeComment = async (
         }
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant like comment', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -278,10 +257,9 @@ const dislikeComment = async (
             },
         })
         if (commentLike == null) {
-            return {
-                result: 'cant dislike a comment that was not previously liked for user',
-                status: 404,
-            }
+            throw new Error(
+                'cant dislike a comment that was not previously liked for user'
+            )
         }
         await prisma.comment.update({
             where: {
@@ -298,6 +276,6 @@ const dislikeComment = async (
         })
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant dislike comment', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }

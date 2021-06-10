@@ -6,5 +6,6 @@ export class ErrorHandler extends Error {
         public detail: string
     ) {
         super()
+        Object.setPrototypeOf(this, ErrorHandler.prototype)
     }
 }

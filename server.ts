@@ -7,11 +7,10 @@ import postsUserRouter from './src/routes/postUsers.router'
 import postsRouter from './src/routes/posts.router'
 import commentsUserRouter from './src/routes/commentUsers.router'
 import commentsRouter from './src/routes/comments.router'
-
-import * as dotenv from 'dotenv'
-
 import { signin, signup } from './src/controllers/auth.controllers'
+import asyncHandler from 'express-async-handler'
 import { ErrorHandler } from './src/errorHandler/errorHandler'
+import * as dotenv from 'dotenv'
 
 const port = process.env.PORT
 
@@ -28,8 +27,8 @@ app.use(json())
 
 app.use(urlencoded({ extended: false }))
 
-app.post('/signup', signup)
-app.post('/signin', signin)
+app.post('/signup', asyncHandler(signup))
+app.post('/signin', asyncHandler(signin))
 
 // app.use('/api', protect)
 app.use('/api/accounts', usersRouter)

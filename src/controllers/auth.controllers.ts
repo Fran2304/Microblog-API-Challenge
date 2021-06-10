@@ -33,16 +33,12 @@ export const signup = async (req: express.Request, res: express.Response) => {
     if (!req.body.email || !req.body.password) {
         return res.status(400).send({ message: 'need email and password' })
     }
-    try {
-        const user = await userService.createUserService(req.body)
-        const token = newToken(user.result.id)
-        return res
-            .status(user.status)
-            .json({ mensaje: 'Complete registration', token: token })
-    } catch (e) {
-        console.error(e)
-        return res.status(500).end()
-    }
+
+    const user = await userService.createUserService(req.body)
+    const token = newToken(user.result.id)
+    return res
+        .status(user.status)
+        .json({ mensaje: 'Complete registration', token: token })
 }
 
 export const signin = async (req: express.Request, res: express.Response) => {
@@ -50,19 +46,15 @@ export const signin = async (req: express.Request, res: express.Response) => {
         return res.status(400).send({ message: 'need email and password' })
     }
     const invalid = { message: 'Invalid email and passoword combination' }
-    try {
-        const user = await userService.readUserService(req.body)
-        if (!user.result) {
-            return res.status(401).send(invalid)
-        }
-        const token = newToken(user.result)
-        return res
-            .status(201)
-            .json({ mensaje: 'Autenticación correcta', token: token })
-    } catch (e) {
-        console.error(e)
-        res.status(500).end()
+
+    const user = await userService.readUserService(req.body)
+    if (!user.result) {
+        return res.status(401).send(invalid)
     }
+    const token = newToken(user.result)
+    return res
+        .status(201)
+        .json({ mensaje: 'Autenticación correcta', token: token })
 }
 
 // export const protect = async (

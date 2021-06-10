@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import cors from 'cors'
-import express from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 import { json, urlencoded } from 'body-parser'
 // import config from './config'
 import usersRouter from './src/routes/users.router'
@@ -12,6 +12,7 @@ import commentsRouter from './src/routes/comments.router'
 import * as dotenv from 'dotenv'
 
 import { signin, signup } from './src/controllers/auth.controllers'
+import { ErrorHandler } from './src/errorHandler/errorHandler'
 
 const port = process.env.PORT
 // const port = 3002
@@ -22,7 +23,7 @@ export const app = express()
 
 app.set('secrets', process.env.JWT_SECRET)
 
-app.disable('x-powered-by')
+app.disable('x-powered-by') //esto que es?
 
 app.use(cors())
 app.use(json())
@@ -41,6 +42,23 @@ app.use('/api/posts', postsRouter)
 app.use('/api/accounts/:id/posts/:postId/comments', commentsUserRouter)
 app.use('/api/posts/:id/comments', commentsRouter)
 console.log(app.routes)
+
+function errorManager(
+    err: ErrorHandler,
+    req: Request,
+    res: Response,
+    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line
+    next: NextFunction
+): void {
+    // eslint-disable-next-line no-undef
+    if (process.env.NODE_ENV === 'development') {
+        console.log(`Detail: ${err.detail}`)
+    }
+    res.status(err.status ?? 500).json(err.message)
+}
+
+app.use(errorManager)
 
 export const start = async () => {
     try {

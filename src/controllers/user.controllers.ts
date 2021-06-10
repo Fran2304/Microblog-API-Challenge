@@ -4,17 +4,12 @@ import * as userService from '../services/users/crudUserService'
 export const updateUser = async (
     req: express.Request,
     res: express.Response
-) => {
-    try {
-        const updatedUser = await userService.updateUserService(
-            req.params.id,
-            req.body
-        )
-        res.status(updatedUser.status).json({ message: updatedUser.status })
-    } catch (e) {
-        console.error(e)
-        res.status(400).end()
-    }
+): Promise<void> => {
+    const updatedUser = await userService.updateUserService(
+        req.params.id,
+        req.body
+    )
+    res.status(updatedUser.status).json({ message: updatedUser.status })
 }
 
 // export const protect = async (req: express.Request, res: express. Response, next: NextFunction) => {

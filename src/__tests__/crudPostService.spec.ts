@@ -3,6 +3,7 @@
 import { PrismaClient } from '@prisma/client'
 // import express from 'express'
 // import { app } from '../../server'
+import { ErrorHandler } from './../errorHandler/errorHandler'
 
 // import {
 //     readPost,
@@ -13,7 +14,6 @@ import { PrismaClient } from '@prisma/client'
 // } from '../services/posts/crudPostService'
 
 import { readPost } from '../services/posts/crudPostService'
-// import { ErrorHandler } from './../errorHandler/errorHandler'
 
 const prisma = new PrismaClient()
 
@@ -138,15 +138,10 @@ describe('read a post from a user', () => {
         const post = await readPost('24')
         expect(post.result).toHaveProperty('title')
     })
-    // it('should return an error if we pass an user that not exists', async () => {
-    //     const postviewed = await readPost('100')
-    //     const expected = {
-    //         result: 'post that does not exist',
-    //         status: 404,
-    //     }
-    //     expect(postviewed).toEqual(expected)
-    // })
-    // Cuando ocurre el catch ?
+
+    it('should return an error if we pass a post id that not exists', async () => {
+        await expect(readPost('100')).rejects.toThrowError(ErrorHandler)
+    })
 })
 
 // describe('show all post published', () => {

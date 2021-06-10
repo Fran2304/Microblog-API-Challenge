@@ -1,13 +1,18 @@
 import { Router } from 'express'
-import * as controller from '../controllers/post.controller'
+import asyncHandler from 'express-async-handler'
+import {
+    createPost,
+    updatePost,
+    deletePost,
+} from '../controllers/post.controller'
 
 const router = Router({ mergeParams: true })
 
-router.route('/').post(controller.createPost)
+router.route('/').post(asyncHandler(createPost))
 
 router
     .route('/:postId')
-    .patch(controller.updatePost)
-    .delete(controller.deletePost)
+    .patch(asyncHandler(updatePost))
+    .delete(asyncHandler(deletePost))
 
 export default router

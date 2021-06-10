@@ -1,11 +1,9 @@
 import { Router } from 'express'
-import * as controller from '../controllers/user.controllers'
+import asyncHandler from 'express-async-handler'
+import { updateUser } from '../controllers/user.controllers'
 const router = Router({ mergeParams: true })
 
-// /api/account
 router.route('/')
-
-// /api/account:id
-router.route('/:id').patch(controller.updateUser)
+router.route('/:id').patch(asyncHandler(updateUser))
 
 export default router

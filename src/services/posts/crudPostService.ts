@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { postType } from '../../type/types'
+import { likeJson, postType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 
@@ -19,8 +19,7 @@ export const createPost = async (authorId: string, params: postType) => {
         })
         return { result: null, status: 204 }
     } catch (e) {
-        console.log(e.message)
-        throw new ErrorHandler('ERROR: cant create post', 404, e.message)
+        throw new ErrorHandler('ERROR: cant create post', 422, e)
     }
 }
 
@@ -36,10 +35,7 @@ export const updatePost = async (
             },
         })
         if (postToUpdate == null) {
-            return {
-                result: 'cant update a post that does not exist ',
-                status: 404,
-            }
+            throw new Error('ERROR: cant update a post that does not exist')
         }
         postToUpdate = await prisma.post.findFirst({
             where: {
@@ -48,10 +44,9 @@ export const updatePost = async (
             },
         })
         if (postToUpdate == null) {
-            return {
-                result: 'cant update post because does not belongs to user',
-                status: 404,
-            }
+            throw new Error(
+                'ERROR: cant update post because does not belongs to user'
+            )
         }
         await prisma.post.update({
             where: {
@@ -63,8 +58,7 @@ export const updatePost = async (
         })
         return { result: null, status: 204 }
     } catch (e) {
-        console.log(e.message)
-        throw new ErrorHandler('ERROR: cant update post', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -76,11 +70,7 @@ export const deletePost = async (id: string, postId: string) => {
             },
         })
         if (postToDelete == null) {
-            throw new ErrorHandler(
-                'ERROR: cant delete a post',
-                404,
-                'cant delete a post that does not exist'
-            )
+            throw new Error('ERROR: cant delete a post that does not exist')
         }
         postToDelete = await prisma.post.findFirst({
             where: {
@@ -89,10 +79,8 @@ export const deletePost = async (id: string, postId: string) => {
             },
         })
         if (postToDelete == null) {
-            throw new ErrorHandler(
-                'ERROR: cant delete a post',
-                404,
-                'cant delete a post that does not belongs to user'
+            throw new Error(
+                'ERROR: cant delete a post that does not belongs to user'
             )
         }
         await prisma.post.delete({
@@ -102,8 +90,7 @@ export const deletePost = async (id: string, postId: string) => {
         })
         return { result: postToDelete, status: 200 }
     } catch (e) {
-        console.log(e.message)
-        throw new ErrorHandler('ERROR: cant delete post', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -114,12 +101,9 @@ export const readPublishedPosts = async () => {
                 published: true,
             },
         })
-        if (posts.length == 0) {
-            return { result: null, status: 404 }
-        }
         return { result: posts, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('ERROR: cant get posts', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -131,20 +115,15 @@ export const readPost = async (id: string) => {
             },
         })
         if (post == null) {
-            return {
-                result: 'post that does not exist',
-                status: 404,
-            }
+            throw new Error('ERROR: post that does not exist')
         }
         return { result: post, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('ERROR: cant read post', 404, e.message)
+        console.log(e)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
-type likeJson = {
-    like: boolean
-}
 export const ProcessPostLike = async (
     id: string,
     postId: string,
@@ -157,10 +136,7 @@ export const ProcessPostLike = async (
             },
         })
         if (post == null) {
-            return {
-                result: 'cant like a post that does not exist ',
-                status: 404,
-            }
+            throw new Error('ERROR: cant like a post that does not exist')
         }
         if (likeData.like) {
             likePost(fixId(id), fixId(postId), post.likesQuantity)
@@ -169,11 +145,10 @@ export const ProcessPostLike = async (
                 dislikePost(fixId(id), fixId(postId), post.likesQuantity)
             }
         }
-
         return { result: null, status: 204 }
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant like post', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
@@ -203,8 +178,7 @@ const likePost = async (authorId: number, postId: number, quantity: number) => {
             })
         }
     } catch (e) {
-        console.log(e.message)
-        throw new ErrorHandler('ERROR: cant like post', 404, e.message)
+        throw new ErrorHandler('ERROR: cant like post', 404, e)
     }
 }
 
@@ -221,10 +195,9 @@ const dislikePost = async (
             },
         })
         if (postLike == null) {
-            return {
-                result: 'cant dislike a post that was not previously liked for user',
-                status: 404,
-            }
+            throw new Error(
+                'ERROR: cant dislike a post that was not previously liked for user'
+            )
         }
         await prisma.post.update({
             where: {
@@ -241,6 +214,6 @@ const dislikePost = async (
         })
     } catch (e) {
         console.log(e.message)
-        throw new ErrorHandler('ERROR: cant dislike post', 404, e.message)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }

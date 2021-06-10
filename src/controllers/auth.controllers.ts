@@ -2,7 +2,6 @@ import express from 'express'
 // import express, { NextFunction } from 'express'
 import * as userService from '../services/auth/auth'
 import jwt from 'jsonwebtoken'
-import config from '../../config'
 
 // import { PrismaClient } from '@prisma/client' // protect
 // const prisma = new PrismaClient() // protect
@@ -14,8 +13,9 @@ import config from '../../config'
 // }
 
 export const newToken = (userId: number) => {
-    return jwt.sign({ id: userId }, config.secrets.jwt as string, {
-        expiresIn: config.secrets.jwtExp,
+    /* eslint-disable no-undef */
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
+        expiresIn: '100d',
     })
 }
 
@@ -28,32 +28,36 @@ export const newToken = (userId: number) => {
 //         })
 //     })
 
-export const signup = async (req: express.Request, res: express.Response) => {
+export const signup = async (
+    req: express.Request,
+    res: express.Response
+): Promise<void> => {
     if (!req.body.email || !req.body.password) {
-        return res.status(400).send({ message: 'need email and password' })
+        res.status(400).send({ message: 'need email and password' })
     }
-
     const user = await userService.createUserService(req.body)
     const token = newToken(user.result.id)
-    return res
-        .status(user.status)
-        .json({ mensaje: 'Complete registration', token: token })
+    res.status(user.status).json({
+        mensaje: 'Complete registration',
+        token: token,
+    })
 }
 
-export const signin = async (req: express.Request, res: express.Response) => {
+export const signin = async (
+    req: express.Request,
+    res: express.Response
+): Promise<void> => {
     if (!req.body.email || !req.body.password) {
-        return res.status(400).send({ message: 'need email and password' })
+        res.status(400).send({ message: 'need email and password' })
     }
-    const invalid = { message: 'Invalid email and passoword combination' }
-
     const user = await userService.readUserService(req.body)
     if (!user.result) {
-        return res.status(401).send(invalid)
+        res.status(401).send({
+            message: 'Invalid email and passoword combination',
+        })
     }
     const token = newToken(user.result)
-    return res
-        .status(201)
-        .json({ mensaje: 'Autenticación correcta', token: token })
+    res.status(201).json({ mensaje: 'Autenticación correcta', token: token })
 }
 
 // export const protect = async (

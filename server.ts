@@ -1,7 +1,6 @@
 import cors from 'cors'
 import express, { Request, Response, NextFunction } from 'express'
 import { json, urlencoded } from 'body-parser'
-import config from './config'
 import usersRouter from './src/routes/users.router'
 import postsUserRouter from './src/routes/postUsers.router'
 import postsRouter from './src/routes/posts.router'
@@ -17,9 +16,10 @@ dotenv.config()
 
 export const app = express()
 
-app.set('secrets', config.secrets.jwt)
+// eslint-disable-next-line no-undef
+app.set('secrets', process.env.JWT_SECRET)
 
-app.disable('x-powered-by') //esto que es?
+app.disable('x-powered-by')
 
 app.use(cors())
 app.use(json())
@@ -58,8 +58,8 @@ app.use(errorManager)
 
 export const start = async () => {
     try {
-        app.listen(config.port, () => {
-            console.log(`REST API on http://localhost:${config.port}/`)
+        app.listen(3002, () => {
+            console.log(`REST API on http://localhost:${3002}/`)
         })
     } catch (e) {
         console.error(e)

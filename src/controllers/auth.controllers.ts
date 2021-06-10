@@ -20,6 +20,7 @@ export const signup = async (
     }
     const user = await userService.createUserService(req.body)
     const token = userService.newToken(user.result.id)
+
     res.status(user.status).json({
         mensaje: 'Complete registration',
         token: token,
@@ -34,6 +35,7 @@ export const signin = async (
         res.status(400).send({ message: 'need email and password' })
     }
     const user = await userService.readUserService(req.body)
+
     const match = await userService.checkPassword(req.body.password)
     if (match) {
     }

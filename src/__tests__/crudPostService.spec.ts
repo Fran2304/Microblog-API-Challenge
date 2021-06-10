@@ -17,12 +17,8 @@ import { readPost } from '../services/posts/crudPostService'
 
 const prisma = new PrismaClient()
 
-beforeEach(async () => {
-    const deleteComment = prisma.comment.deleteMany()
-    const deletePost = prisma.post.deleteMany()
-    const deleteUserDetails = prisma.user.deleteMany()
-    await prisma.$transaction([deleteUserDetails, deletePost, deleteComment])
-    // create product categories
+beforeAll(async () => {
+    // create user
     await prisma.user.createMany({
         data: [
             {
@@ -135,7 +131,7 @@ beforeEach(async () => {
 
 describe('read a post from a user', () => {
     it('should return a post from a user', async () => {
-        const post = await readPost('24')
+        const post = await readPost('1')
         expect(post.result).toHaveProperty('title')
     })
 
@@ -233,6 +229,30 @@ describe('read a post from a user', () => {
 //     it('should give a like', async () => {})
 // })
 
+const clearDatabase = async function () {
+    const tableNames = ['Comment', 'Post', 'User']
+    try {
+        for (const tableName of tableNames) {
+            await prisma.$queryRaw(`DELETE FROM "${tableName}";`)
+            if (!['Store'].includes(tableName)) {
+                await prisma.$queryRaw(
+                    `ALTER SEQUENCE "${tableName}_id_seq" RESTART WITH 1;`
+                )
+            }
+        }
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err)
+    } finally {
+        await prisma.$disconnect()
+    }
+}
+
 afterAll(async () => {
-    await prisma.$disconnect()
+    await clearDatabase()
+    const deleteComment = prisma.comment.deleteMany()
+    const deletePost = prisma.post.deleteMany()
+    const deleteUserDetails = prisma.user.deleteMany()
+    await prisma.$transaction([deleteUserDetails, deletePost, deleteComment])
+    // await prisma.$disconnect()
 })

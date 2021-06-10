@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import cors from 'cors'
 import express from 'express'
 import { json, urlencoded } from 'body-parser'
-import config from './config'
+// import config from './config'
 import usersRouter from './src/routes/users.router'
 import postsUserRouter from './src/routes/postUsers.router'
 import postsRouter from './src/routes/posts.router'
@@ -12,11 +13,14 @@ import * as dotenv from 'dotenv'
 
 import { signin, signup } from './src/controllers/auth.controllers'
 
+const port = process.env.PORT
+// const port = 3002
+
 dotenv.config()
 
 export const app = express()
 
-app.set('secrets', config.secrets.jwt)
+app.set('secrets', process.env.JWT_SECRET)
 
 app.disable('x-powered-by')
 
@@ -40,8 +44,8 @@ console.log(app.routes)
 
 export const start = async () => {
     try {
-        app.listen(config.port, () => {
-            console.log(`REST API on http://localhost:${config.port}/`)
+        app.listen(port, () => {
+            console.log(`REST API on http://localhost:${port}/`)
         })
     } catch (e) {
         console.error(e)

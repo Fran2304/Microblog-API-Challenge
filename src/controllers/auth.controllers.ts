@@ -1,8 +1,9 @@
+/* eslint-disable no-undef */
 import express from 'express'
 // import express, { NextFunction } from 'express'
 import * as userService from '../services/auth/auth'
 import jwt from 'jsonwebtoken'
-import config from '../../config'
+// import config from '../../config'
 
 // import { PrismaClient } from '@prisma/client' // protect
 // const prisma = new PrismaClient() // protect
@@ -14,8 +15,8 @@ import config from '../../config'
 // }
 
 export const newToken = (userId: number) => {
-    return jwt.sign({ id: userId }, config.secrets.jwt as string, {
-        expiresIn: config.secrets.jwtExp,
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
+        expiresIn: '100d',
     })
 }
 

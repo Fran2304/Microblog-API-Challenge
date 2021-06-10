@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import express from 'express'
 // import express, { NextFunction } from 'express'
 import * as userService from '../services/auth/auth'
@@ -13,7 +14,6 @@ import jwt from 'jsonwebtoken'
 // }
 
 export const newToken = (userId: number) => {
-    /* eslint-disable no-undef */
     return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
         expiresIn: '100d',
     })

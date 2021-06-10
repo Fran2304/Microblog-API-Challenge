@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import cors from 'cors'
 import express, { Request, Response, NextFunction } from 'express'
 import { json, urlencoded } from 'body-parser'
@@ -12,11 +13,12 @@ import * as dotenv from 'dotenv'
 import { signin, signup } from './src/controllers/auth.controllers'
 import { ErrorHandler } from './src/errorHandler/errorHandler'
 
+const port = process.env.PORT
+
 dotenv.config()
 
 export const app = express()
 
-// eslint-disable-next-line no-undef
 app.set('secrets', process.env.JWT_SECRET)
 
 app.disable('x-powered-by')
@@ -58,8 +60,8 @@ app.use(errorManager)
 
 export const start = async () => {
     try {
-        app.listen(3002, () => {
-            console.log(`REST API on http://localhost:${3002}/`)
+        app.listen(port, () => {
+            console.log(`REST API on http://localhost:${port}/`)
         })
     } catch (e) {
         console.error(e)

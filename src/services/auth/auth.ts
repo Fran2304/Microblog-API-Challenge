@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { PrismaClient } from '@prisma/client'
-import { userType } from '../../type/types'
+import { confirmationType, userType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { plainToClass } from 'class-transformer'
 import { UserDto } from '../../Dtos/userDto'
@@ -100,6 +100,36 @@ export const signInUser = async (params: userType) => {
         }
         const token = newToken(readUser.id)
         return { result: token, status: 200 }
+    } catch (e) {
+        throw new ErrorHandler(e.message, 401, e)
+    }
+}
+
+export const VerifyCode = async (codeSent: confirmationType) => {
+    try {
+        if (!codeSent.confirmationCode) {
+            throw new Error('confirmation code cant be empty')
+        }
+        const readUser = await prisma.user.findFirst({
+            where: {
+                hashActivation: codeSent.confirmationCode,
+            },
+        })
+        if (readUser == null) {
+            throw new Error('ERROR: invalid code')
+        }
+        if (readUser.emailVerified === true) {
+            throw new Error('ERROR: the user already has confirmed the email')
+        }
+        await prisma.user.update({
+            where: {
+                id: readUser.id,
+            },
+            data: {
+                emailVerified: true,
+            },
+        })
+        return { result: true, status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, 401, e)
     }

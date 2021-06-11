@@ -42,6 +42,30 @@ export const signin = async (
     }
 }
 
+export const signout = async (
+    req: express.Request,
+    res: express.Response
+): Promise<void> => {
+    const user = await userService.signInUser(req.body)
+    if (user.result) {
+        res.status(201).json({
+            mensaje: 'Autenticacion correcta',
+            token: user.result,
+        })
+    }
+}
+
+export const verifyConfirmationCode = async (
+    req: express.Request,
+    res: express.Response
+): Promise<void> => {
+    const isVerified = await userService.VerifyCode(req.body)
+    if (isVerified.result) {
+        res.status(200).json({
+            mensaje: 'Verificacion de email correcta',
+        })
+    }
+}
 // export const protect = async (
 //     req: express.Request,
 //     res: express.Response,

@@ -27,3 +27,7 @@ export type userType = {
 export type likeJson = {
     like: boolean
 }
+
+export type confirmationType = {
+    confirmationCode: string
+}

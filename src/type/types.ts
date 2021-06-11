@@ -1,9 +1,6 @@
 export type commentType = {
-    createdAt: Date
     content: string
-    published: boolean
-    authorId: number
-    postId: number
+    published?: boolean
 }
 
 export type postType = {

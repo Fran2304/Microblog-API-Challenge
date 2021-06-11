@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import express from 'express'
 // import express, { NextFunction } from 'express'
-import * as userService from '../services/auth/auth'
+import * as userService from '../services/auth/authService'
 import jwt from 'jsonwebtoken'
 // import config from '../../config'
 

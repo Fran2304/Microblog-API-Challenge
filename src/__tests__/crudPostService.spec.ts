@@ -5,15 +5,14 @@ import { PrismaClient } from '@prisma/client'
 // import { app } from '../../server'
 import { ErrorHandler } from './../errorHandler/errorHandler'
 
-// import {
-//     readPost,
-//     readPublishedPosts,
-//     deletePost,
-//     createPost,
-//     updatePost,
-// } from '../services/posts/crudPostService'
-
-import { readPost } from '../services/posts/crudPostService'
+import {
+    createPost,
+    readPost,
+    readPublishedPosts,
+    updatePost,
+    deletePost,
+    likePost,
+} from '../services/posts/crudPostService'
 
 const prisma = new PrismaClient()
 
@@ -129,6 +128,83 @@ beforeAll(async () => {
     console.log('✨ 2 comments successfully created!')
 })
 
+// Test create
+
+const examplePost = {
+    title: 'la seleccion gano',
+    content: 'Peru 2 Ecuador 1',
+}
+const emptyPost = {
+    title: '',
+    content: '',
+}
+
+describe('create a post', () => {
+    it('should create a post', async () => {
+        const postCreated = await createPost('1', examplePost)
+        const expected = { result: null, status: 204 }
+        expect(postCreated).toEqual(expected)
+    })
+    it('should return an error if we dont pass anny content', async () => {
+        await expect(createPost('1', emptyPost)).rejects.toThrowError(Error)
+    })
+})
+
+// Update post
+
+const exampleUpdate = {
+    title: 'que lindo dia',
+    content: 'lindo sol',
+}
+
+describe('update a post', () => {
+    it('should update the content of a post', async () => {
+        const postUpdated = await updatePost('1', '1', exampleUpdate)
+        const expected = { result: null, status: 204 }
+        expect(postUpdated).toEqual(expected)
+    })
+    it('should return error if the post does not exist', async () => {
+        // const postUpdated = await updatePost('2', '100', exampleUpdate)
+        await expect(
+            updatePost('2', '100', exampleUpdate)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+    it('should return error if the post does not exist', async () => {
+        // const postUpdated = await updatePost('1', '2', exampleUpdate)
+        await expect(updatePost('1', '2', exampleUpdate)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+})
+
+// Test delete
+
+describe('delete a post', () => {
+    it('should return post deleted', async () => {
+        const postToDelete = await deletePost('2', '2')
+        expect(postToDelete.result).toHaveProperty('title', 'manualidades')
+    })
+    it('should return an error if we past a post that does not exist', async () => {
+        await expect(deletePost('2', '100')).rejects.toThrowError(ErrorHandler)
+    })
+
+    it('should return an error if the post does not belong to user', async () => {
+        await expect(deletePost('1', '1')).rejects.toThrowError(ErrorHandler)
+    })
+})
+
+// Test readPublishedPosts
+
+describe('show all post published', () => {
+    it('should return the number of post pusblished', async () => {
+        const allPost = await readPublishedPosts()
+        expect(allPost.result).toHaveLength(2)
+        expect(allPost.result[0].title).toBe('mi primer postre')
+    })
+})
+
+// Test readPosts
+
 describe('read a post from a user', () => {
     it('should return a post from a user', async () => {
         const post = await readPost('1')
@@ -140,94 +216,17 @@ describe('read a post from a user', () => {
     })
 })
 
-// describe('show all post published', () => {
-//     it('should return all posts published', async () => {
-//         const allPost = await readPublishedPosts()
-//         const expected = [
-//             {
-//                 id: 1,
-//                 title: 'mi primer postre',
-//                 createdAt: new Date('2021-02-12T05:00:00.000Z'),
-//                 content: 'mi primer postre que hice fue chocotorta',
-//                 published: true,
-//                 likesQuantity: 0,
-//                 authorId: 1,
-//             },
-//             {
-//                 id: 2,
-//                 title: 'manualidades',
-//                 createdAt: new Date('2021-02-12T05:00:00.000Z'),
-//                 content: 'realizar una almohada',
-//                 published: true,
-//                 likesQuantity: 0,
-//                 authorId: 2,
-//             },
-//         ]
-//         expect(allPost.result).toEqual(expected)
-//     })
-// })
+// Test process  like
 
-// describe('delete a post', () => {
-//     it('should return post deleted', async () => {
-//         const postToDelete = await deletePost('1', '8')
-//         const expected = {
-//             authorId: 1,
-//             content: expect.any(String),
-//             createdAt: expect.any(Date),
-//             id: 8,
-//             likesQuantity: expect.any(Number),
-//             published: expect.any(Boolean),
-//             title: expect.any(String),
-//         }
-//         expect(postToDelete.result).toEqual(expected)
-//     })
-//     // it('should return an error if we past a post that does not exist', async () => {
-//     //     const postToDelete = await deletePost('2', '100')
-//     //     const expected = {
-//     //         result: 'cant delete a post that does not exist',
-//     //         status: 404,
-//     //     }
-//     //     expect(postToDelete).toEqual(expected)
-//     // })
-
-//     // it('should return an error if the post does not belong to user', async () => {
-//     //     const postToDelete = await deletePost('1', '2')
-//     //     const expected = {
-//     //         result: 'cant delete a post that does not belongs to user',
-//     //         status: 404,
-//     //     }
-//     //     expect(postToDelete).toEqual(expected)
-//     // })
-// })
-
-// const examplePost = {
-//     title: 'la seleccion gano',
-//     content: 'Peru 2 Ecuador 1',
-// }
-// describe('create a post', () => {
-//     it('should create a post', async () => {
-//         const postCreated = await createPost('1', examplePost)
-//         const expected = { result: null, status: 204 }
-//         expect(postCreated).toEqual(expected)
-//     })
-// })
-
-// const exampleUpdate = {
-//     title: 'que lindo dia',
-//     content: 'lindo sol',
-// }
-
-// describe('update a post', () => {
-//     it('should update the content of a post', async () => {
-//         const postUpdated = await updatePost('1', '9', exampleUpdate)
-//         const expected = { result: null, status: 204 }
-//         expect(postUpdated).toEqual(expected)
-//     })
-// })
-
-// describe('process post likes', () => {
-//     it('should give a like', async () => {})
-// })
+// Test increase like
+describe('like post', () => {
+    it('should update the content of a post', async () => {
+        const postliked = await likePost(1, 1, 0)
+        const expected = { result: null, status: 204 }
+        // expect(postliked).toBe(1)
+        expect(postliked).toBe(expected)
+    })
+})
 
 const clearDatabase = async function () {
     const tableNames = ['Comment', 'Post', 'User']

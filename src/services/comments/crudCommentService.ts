@@ -40,7 +40,7 @@ export const createComment = async (
 }
 
 export const updateComment = async (
-    id: string,
+    authorId: string,
     postId: string,
     commentId: string,
     params: commentType
@@ -70,7 +70,7 @@ export const updateComment = async (
             where: {
                 id: fixId(commentId),
                 postId: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorId),
             },
         })
         if (commentToUpdate == null) {
@@ -92,7 +92,7 @@ export const updateComment = async (
 }
 
 export const deleteComment = async (
-    id: string,
+    authorid: string,
     postId: string,
     commentId: string
 ) => {
@@ -120,7 +120,7 @@ export const deleteComment = async (
             where: {
                 id: fixId(commentId),
                 postId: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorid),
             },
         })
         if (commentToDelete == null) {
@@ -142,6 +142,14 @@ export const deleteComment = async (
 
 export const readPublishedComments = async (postId: string) => {
     try {
+        let post = await prisma.post.findFirst({
+            where: {
+                id: fixId(postId),
+            },
+        })
+        if (post == null) {
+            throw new Error('ERROR: post does not exist')
+        }
         const comments = await prisma.comment.findMany({
             where: {
                 published: true,

@@ -7,6 +7,10 @@ const prisma = new PrismaClient()
 
 export const createPost = async (authorId: string, params: postType) => {
     try {
+        if (!params.title || !params.content) {
+            throw new Error('Content cant be empty')
+        }
+
         const today: Date = new Date()
         await prisma.post.create({
             data: {
@@ -19,7 +23,7 @@ export const createPost = async (authorId: string, params: postType) => {
         })
         return { result: null, status: 204 }
     } catch (e) {
-        throw new ErrorHandler('ERROR: cant create post', 422, e)
+        throw new ErrorHandler('ERROR: cant create post', 422, e.message)
     }
 }
 
@@ -152,7 +156,11 @@ export const ProcessPostLike = async (
     }
 }
 
-const likePost = async (authorId: number, postId: number, quantity: number) => {
+export const likePost = async (
+    authorId: number,
+    postId: number,
+    quantity: number
+) => {
     try {
         const postLike = await prisma.postLikes.findFirst({
             where: {
@@ -182,7 +190,7 @@ const likePost = async (authorId: number, postId: number, quantity: number) => {
     }
 }
 
-const dislikePost = async (
+export const dislikePost = async (
     authorId: number,
     postId: number,
     quantity: number

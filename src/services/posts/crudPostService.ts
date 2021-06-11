@@ -28,7 +28,7 @@ export const createPost = async (authorId: string, params: postType) => {
 }
 
 export const updatePost = async (
-    id: string,
+    authorId: string,
     postId: string,
     params: postType
 ) => {
@@ -44,7 +44,7 @@ export const updatePost = async (
         postToUpdate = await prisma.post.findFirst({
             where: {
                 id: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorId),
             },
         })
         if (postToUpdate == null) {
@@ -66,7 +66,7 @@ export const updatePost = async (
     }
 }
 
-export const deletePost = async (id: string, postId: string) => {
+export const deletePost = async (authorId: string, postId: string) => {
     try {
         let postToDelete = await prisma.post.findFirst({
             where: {
@@ -79,7 +79,7 @@ export const deletePost = async (id: string, postId: string) => {
         postToDelete = await prisma.post.findFirst({
             where: {
                 id: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorId),
             },
         })
         if (postToDelete == null) {

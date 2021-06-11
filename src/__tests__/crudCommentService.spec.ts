@@ -233,6 +233,11 @@ describe('read all published comments', () => {
         const comments = await readPublishedComments('3')
         await expect(comments.result).toBe(null)
     })
+    it('should return error if we pass a post id that not exists', async () => {
+        await expect(readPublishedComments('100')).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
 })
 // Test read comment
 describe('read a comment', () => {

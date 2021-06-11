@@ -1,15 +1,5 @@
 import express from 'express'
-// import express, { NextFunction } from 'express'
-import * as userService from '../services/auth/auth'
-
-// // ojito con el type token
-// export const verifyToken = (token: string)  =>
-//     new Promise((resolve, reject) => {
-//         jwt.verify(token, config.secrets.jwt as string, (err, payload) => {
-//             if (err) return reject(err)
-//             resolve
-//         })
-//     })
+import * as userService from '../services/auth/authService'
 
 export const signup = async (
     req: express.Request,
@@ -36,7 +26,7 @@ export const signin = async (
     const user = await userService.signInUser(req.body)
     if (user.result) {
         res.status(201).json({
-            mensaje: 'Autenticacion correcta',
+            mensaje: 'Correct authentication',
             token: user.result,
         })
     }
@@ -46,10 +36,12 @@ export const signout = async (
     req: express.Request,
     res: express.Response
 ): Promise<void> => {
-    const user = await userService.signInUser(req.body)
+    const authToken = req.headers.authorization as string
+    console.log(authToken)
+    const user = await userService.signOutUser(authToken)
     if (user.result) {
         res.status(201).json({
-            mensaje: 'Autenticacion correcta',
+            mensaje: 'Sing out correct',
             token: user.result,
         })
     }
@@ -62,7 +54,7 @@ export const verifyConfirmationCode = async (
     const isVerified = await userService.VerifyCode(req.body)
     if (isVerified.result) {
         res.status(200).json({
-            mensaje: 'Verificacion de email correcta',
+            mensaje: 'Correct email verification',
         })
     }
 }

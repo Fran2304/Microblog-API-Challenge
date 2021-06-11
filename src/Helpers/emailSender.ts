@@ -5,7 +5,6 @@ export const sendMailOfConfirmationCode = (
     emailDestination: string,
     code: string
 ) => {
-    code
     if (process.env.APIKEYSENDGRID) {
         const body = `Welcome to our microblog!, your activation code is: ${code}`
         senderMail.setApiKey(process.env.APIKEYSENDGRID)

@@ -31,3 +31,7 @@ export type likeJson = {
 export type confirmationType = {
     confirmationCode: string
 }
+
+export type tokenPayload = {
+    id: number
+}

@@ -8,6 +8,8 @@ import { generateHash } from '../../Helpers/createHashHelper'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { sendMailOfConfirmationCode } from '../../Helpers/emailSender'
+import { fixId } from '../../Helpers/dataHelper'
+import { reject } from 'lodash'
 
 const prisma = new PrismaClient()
 
@@ -15,6 +17,7 @@ const generatePassword = async (plainTextPassword: string): Promise<string> => {
     return new Promise((resolve) => {
         bcrypt.hash(plainTextPassword, 8, (err, hash) => {
             if (err) {
+                reject(err)
                 throw new ErrorHandler(
                     'ERROR: Cant generate hash or password',
                     409,
@@ -31,6 +34,18 @@ export const newToken = (userId: number) => {
         expiresIn: process.env.JWT_EXPIRE,
     })
 }
+
+
+export const verifyToken = (token:string) =>
+  new Promise((resolve, reject) => {
+    jwt.verify(token, process.env.JWT_SECRET as string, (err, payload) => {
+      if (err) { 
+          reject(err)
+          throw new Error('ERROR: Cant verify token')
+      }
+      resolve(payload)
+    })
+  })
 
 export const checkPassword = (
     passwordInDB: string,
@@ -99,6 +114,25 @@ export const signInUser = async (params: userType) => {
             throw new ErrorHandler('ERROR: passwords dont match', 401, '')
         }
         const token = newToken(readUser.id)
+        return { result: token, status: 200 }
+    } catch (e) {
+        throw new ErrorHandler(e.message, 401, e)
+    }
+}
+
+export const signOutUser = async (token: string) => {
+    try {
+        const payload = await verifyToken(token)
+        console.log(payload)
+        const id = fixId(token)
+        const readUser = await prisma.user.findUnique({
+            where: {
+                id: id,
+            },
+        })
+        if (readUser == null) {
+            throw new Error('ERROR: invalid user id')
+        }
         return { result: token, status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, 401, e)

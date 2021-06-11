@@ -37,7 +37,7 @@ app.post('/signin', asyncHandler(signin))
 app.post('/signout', asyncHandler(signout))
 app.patch('/emailconfirmation', asyncHandler(verifyConfirmationCode))
 
-// app.use('/api', protect)
+//app.use('/api', protect)
 app.use('/api/accounts', usersRouter)
 
 app.use('/api/accounts/:id/posts', postsUserRouter)

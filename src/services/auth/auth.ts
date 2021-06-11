@@ -7,6 +7,7 @@ import { UserDto } from '../../Dtos/userDto'
 import { generateHash } from '../../Helpers/createHashHelper'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import { sendMailOfConfirmationCode } from '../../Helpers/emailSender'
 
 const prisma = new PrismaClient()
 
@@ -15,7 +16,7 @@ const generatePassword = async (plainTextPassword: string): Promise<string> => {
         bcrypt.hash(plainTextPassword, 8, (err, hash) => {
             if (err) {
                 throw new ErrorHandler(
-                    'ERROR: Passwords dont match',
+                    'ERROR: Cant generate hash or password',
                     409,
                     err.message
                 )
@@ -27,26 +28,26 @@ const generatePassword = async (plainTextPassword: string): Promise<string> => {
 
 export const newToken = (userId: number) => {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-        expiresIn: '100d',
+        expiresIn: process.env.JWT_EXPIRE,
     })
 }
-export const checkPassword = (password: string): Promise<boolean> => {
-    const passwordHash = password
-    return new Promise((resolve) => {
-        bcrypt.compare(password, passwordHash, (err, same) => {
+
+export const checkPassword = (
+    passwordInDB: string,
+    passwordSend: string
+): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(passwordSend, passwordInDB, (err, same) => {
             if (err) {
-                throw new ErrorHandler(
-                    'ERROR: Passwords dont match',
-                    409,
-                    err.message
-                )
+                reject(err)
+                throw new Error('ERROR: Passwords dont match')
             }
             resolve(same)
         })
     })
 }
 
-export const createUserService = async (params: userType) => {
+export const signUpUser = async (params: userType) => {
     try {
         const userRead = await prisma.user.findUnique({
             where: {
@@ -60,15 +61,19 @@ export const createUserService = async (params: userType) => {
                 'ERROR: the email is already registered'
             )
         }
-
         const passwordHashed = await generatePassword(params.password)
+        const confirmationCode = generateHash()
         const createdUser = await prisma.user.create({
             data: {
                 ...params,
                 password: passwordHashed,
-                hashActivation: generateHash(),
+                hashActivation: confirmationCode,
             },
         })
+        if (createdUser) {
+            sendMailOfConfirmationCode(createdUser.email, confirmationCode)
+        }
+
         return { result: plainToClass(UserDto, createdUser), status: 201 }
     } catch (e) {
         console.log(e)
@@ -76,8 +81,11 @@ export const createUserService = async (params: userType) => {
     }
 }
 
-export const readUserService = async (params: userType) => {
+export const signInUser = async (params: userType) => {
     try {
+        if (!params.email || !params.password) {
+            throw new Error('need email and password')
+        }
         const readUser = await prisma.user.findUnique({
             where: {
                 email: params.email,
@@ -86,7 +94,12 @@ export const readUserService = async (params: userType) => {
         if (readUser == null) {
             throw new Error('ERROR: invalid email')
         }
-        return { result: readUser.id, status: 200 }
+        const pass = await checkPassword(readUser.password, params.password)
+        if (!pass) {
+            throw new ErrorHandler('ERROR: passwords dont match', 401, '')
+        }
+        const token = newToken(readUser.id)
+        return { result: token, status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, 401, e)
     }

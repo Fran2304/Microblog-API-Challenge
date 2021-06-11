@@ -18,32 +18,26 @@ export const signup = async (
     if (!req.body.email || !req.body.password) {
         res.status(400).send({ message: 'need email and password' })
     }
-    const user = await userService.createUserService(req.body)
-    const token = userService.newToken(user.result.id)
+    const user = await userService.signUpUser(req.body)
+    if (user) {
+        const token = userService.newToken(user.result.id)
 
-    res.status(user.status).json({
-        mensaje: 'Complete registration',
-        token: token,
-    })
+        res.status(user.status).json({
+            mensaje: 'Complete registration',
+            token: token,
+        })
+    }
 }
 
 export const signin = async (
     req: express.Request,
     res: express.Response
 ): Promise<void> => {
-    if (!req.body.email || !req.body.password) {
-        res.status(400).send({ message: 'need email and password' })
-    }
-    const user = await userService.readUserService(req.body)
-
-    const match = await userService.checkPassword(req.body.password)
-    if (match) {
-    }
-    if (user) {
-        const token = userService.newToken(user.result)
+    const user = await userService.signInUser(req.body)
+    if (user.result) {
         res.status(201).json({
-            mensaje: 'Autenticación correcta',
-            token: token,
+            mensaje: 'Autenticacion correcta',
+            token: user.result,
         })
     }
 }

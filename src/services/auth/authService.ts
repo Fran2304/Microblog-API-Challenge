@@ -1,6 +1,15 @@
+/* eslint-disable no-undef */
 import { PrismaClient } from '@prisma/client'
-import { userType } from '../../type/types'
+import { confirmationType, userType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
+import { plainToClass } from 'class-transformer'
+import { UserDto } from '../../Dtos/userDto'
+import { generateHash } from '../../Helpers/createHashHelper'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
+import { sendMailOfConfirmationCode } from '../../Helpers/emailSender'
+import { fixId } from '../../Helpers/dataHelper'
+import { reject } from 'lodash'
 
 const prisma = new PrismaClient()
 
@@ -52,6 +61,40 @@ export const checkPassword = (
     })
 }
 
+export const signUpUser = async (params: userType) => {
+    try {
+        const userRead = await prisma.user.findUnique({
+            where: {
+                email: params.email,
+            },
+        })
+        if (userRead != null) {
+            throw new ErrorHandler(
+                'ERROR: the email is already registered',
+                409,
+                'ERROR: the email is already registered'
+            )
+        }
+        const passwordHashed = await generatePassword(params.password)
+        const confirmationCode = generateHash()
+        const createdUser = await prisma.user.create({
+            data: {
+                ...params,
+                password: passwordHashed,
+                hashActivation: confirmationCode,
+            },
+        })
+        if (createdUser) {
+            sendMailOfConfirmationCode(createdUser.email, confirmationCode)
+        }
+
+        return { result: plainToClass(UserDto, createdUser), status: 201 }
+    } catch (e) {
+        console.log(e)
+        throw new ErrorHandler(e.message, e.status ?? 404, e)
+    }
+}
+
 export const signInUser = async (params: userType) => {
     try {
         if (!params.email || !params.password) {
@@ -76,28 +119,51 @@ export const signInUser = async (params: userType) => {
     }
 }
 
-export const signUpUser = async (params: userType) => {
+export const signOutUser = async (token: string) => {
     try {
-        const createdUser = await prisma.user.create({
-            data: {
-                ...params,
+        const payload = await verifyToken(token)
+        console.log(payload)
+        const id = fixId(token)
+        const readUser = await prisma.user.findUnique({
+            where: {
+                id: id,
             },
         })
-        return { result: createdUser, status: 201 }
+        if (readUser == null) {
+            throw new Error('ERROR: invalid user id')
+        }
+        return { result: token, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('cant create users', 404, e.message)
+        throw new ErrorHandler(e.message, 401, e)
     }
 }
 
-export const readUserService = async (params: userType) => {
+export const VerifyCode = async (codeSent: confirmationType) => {
     try {
-        const readUser = await prisma.user.findUnique({
+        if (!codeSent.confirmationCode) {
+            throw new Error('confirmation code cant be empty')
+        }
+        const readUser = await prisma.user.findFirst({
             where: {
-                email: params.email,
+                hashActivation: codeSent.confirmationCode,
             },
         })
-        return { result: readUser?.id, status: 200 }
+        if (readUser == null) {
+            throw new Error('ERROR: invalid code')
+        }
+        if (readUser.emailVerified === true) {
+            throw new Error('ERROR: the user already has confirmed the email')
+        }
+        await prisma.user.update({
+            where: {
+                id: readUser.id,
+            },
+            data: {
+                emailVerified: true,
+            },
+        })
+        return { result: true, status: 200 }
     } catch (e) {
-        throw new ErrorHandler('cant get user', 404, e.message)
+        throw new ErrorHandler(e.message, 401, e)
     }
 }

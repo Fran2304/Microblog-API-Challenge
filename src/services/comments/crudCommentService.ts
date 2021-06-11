@@ -12,7 +12,11 @@ export const createComment = async (
 ) => {
     try {
         if (!params.content) {
-            throw new ErrorHandler('Content cant be empty', 411, '')
+            throw new ErrorHandler(
+                'Content cant be empty',
+                411,
+                'Content cant be empty'
+            )
         }
         const post = await prisma.post.findFirst({
             where: {

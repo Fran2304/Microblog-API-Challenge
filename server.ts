@@ -2,20 +2,22 @@
 import cors from 'cors'
 import express, { Request, Response, NextFunction } from 'express'
 import { json, urlencoded } from 'body-parser'
-// import config from './config'
 import usersRouter from './src/routes/users.router'
 import postsUserRouter from './src/routes/postUsers.router'
 import postsRouter from './src/routes/posts.router'
 import commentsUserRouter from './src/routes/commentUsers.router'
 import commentsRouter from './src/routes/comments.router'
-
+import {
+    signin,
+    signup,
+    signout,
+    verifyConfirmationCode,
+} from './src/controllers/auth.controllers'
+import asyncHandler from 'express-async-handler'
+import { ErrorHandler } from './src/errorHandler/errorHandler'
 import * as dotenv from 'dotenv'
 
-import { signin, signup } from './src/controllers/auth.controllers'
-import { ErrorHandler } from './src/errorHandler/errorHandler'
-
 const port = process.env.PORT
-// const port = 3002
 
 dotenv.config()
 
@@ -23,17 +25,19 @@ export const app = express()
 
 app.set('secrets', process.env.JWT_SECRET)
 
-app.disable('x-powered-by') //esto que es?
+app.disable('x-powered-by')
 
 app.use(cors())
 app.use(json())
 
 app.use(urlencoded({ extended: false }))
 
-app.post('/signup', signup)
-app.post('/signin', signin)
+app.post('/signup', asyncHandler(signup))
+app.post('/signin', asyncHandler(signin))
+app.post('/signout', asyncHandler(signout))
+app.patch('/emailconfirmation', asyncHandler(verifyConfirmationCode))
 
-// app.use('/api', protect)
+//app.use('/api', protect)
 app.use('/api/accounts', usersRouter)
 
 app.use('/api/accounts/:id/posts', postsUserRouter)

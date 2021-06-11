@@ -1,12 +1,5 @@
 import express from 'express'
-<<<<<<< HEAD
-// import express, { NextFunction } from 'express'
 import * as userService from '../services/auth/authService'
-import jwt from 'jsonwebtoken'
-// import config from '../../config'
-=======
-import * as userService from '../services/auth/authService'
->>>>>>> d452dfb52e8965db8efea0bbe3188ed7408f062d
 
 export const signup = async (
     req: express.Request,
@@ -44,7 +37,6 @@ export const signout = async (
     res: express.Response
 ): Promise<void> => {
     const authToken = req.headers.authorization as string
-    console.log(authToken)
     const user = await userService.signOutUser(authToken)
     if (user.result) {
         res.status(201).json({

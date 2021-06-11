@@ -7,6 +7,10 @@ const prisma = new PrismaClient()
 
 export const createPost = async (authorId: string, params: postType) => {
     try {
+        if (!params.title || !params.content) {
+            throw new Error('Content cant be empty')
+        }
+
         const today: Date = new Date()
         await prisma.post.create({
             data: {
@@ -19,12 +23,12 @@ export const createPost = async (authorId: string, params: postType) => {
         })
         return { result: null, status: 204 }
     } catch (e) {
-        throw new ErrorHandler('ERROR: cant create post', 422, e)
+        throw new ErrorHandler('ERROR: cant create post', 422, e.message)
     }
 }
 
 export const updatePost = async (
-    id: string,
+    authorId: string,
     postId: string,
     params: postType
 ) => {
@@ -40,7 +44,7 @@ export const updatePost = async (
         postToUpdate = await prisma.post.findFirst({
             where: {
                 id: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorId),
             },
         })
         if (postToUpdate == null) {
@@ -62,7 +66,7 @@ export const updatePost = async (
     }
 }
 
-export const deletePost = async (id: string, postId: string) => {
+export const deletePost = async (authorId: string, postId: string) => {
     try {
         let postToDelete = await prisma.post.findFirst({
             where: {
@@ -75,7 +79,7 @@ export const deletePost = async (id: string, postId: string) => {
         postToDelete = await prisma.post.findFirst({
             where: {
                 id: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorId),
             },
         })
         if (postToDelete == null) {
@@ -152,7 +156,11 @@ export const ProcessPostLike = async (
     }
 }
 
-const likePost = async (authorId: number, postId: number, quantity: number) => {
+export const likePost = async (
+    authorId: number,
+    postId: number,
+    quantity: number
+) => {
     try {
         const postLike = await prisma.postLikes.findFirst({
             where: {
@@ -182,7 +190,7 @@ const likePost = async (authorId: number, postId: number, quantity: number) => {
     }
 }
 
-const dislikePost = async (
+export const dislikePost = async (
     authorId: number,
     postId: number,
     quantity: number

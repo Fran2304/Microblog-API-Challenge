@@ -44,7 +44,7 @@ export const createComment = async (
 }
 
 export const updateComment = async (
-    id: string,
+    authorId: string,
     postId: string,
     commentId: string,
     params: commentType
@@ -74,7 +74,7 @@ export const updateComment = async (
             where: {
                 id: fixId(commentId),
                 postId: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorId),
             },
         })
         if (commentToUpdate == null) {
@@ -96,7 +96,7 @@ export const updateComment = async (
 }
 
 export const deleteComment = async (
-    id: string,
+    authorid: string,
     postId: string,
     commentId: string
 ) => {
@@ -124,7 +124,7 @@ export const deleteComment = async (
             where: {
                 id: fixId(commentId),
                 postId: fixId(postId),
-                authorId: fixId(id),
+                authorId: fixId(authorid),
             },
         })
         if (commentToDelete == null) {

@@ -37,7 +37,6 @@ export const signout = async (
     res: express.Response
 ): Promise<void> => {
     const authToken = req.headers.authorization as string
-    console.log(authToken)
     const user = await userService.signOutUser(authToken)
     if (user.result) {
         res.status(201).json({

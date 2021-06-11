@@ -146,6 +146,14 @@ export const deleteComment = async (
 
 export const readPublishedComments = async (postId: string) => {
     try {
+        let post = await prisma.post.findFirst({
+            where: {
+                id: fixId(postId),
+            },
+        })
+        if (post == null) {
+            throw new Error('ERROR: post does not exist')
+        }
         const comments = await prisma.comment.findMany({
             where: {
                 published: true,

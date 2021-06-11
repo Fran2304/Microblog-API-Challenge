@@ -35,17 +35,16 @@ export const newToken = (userId: number) => {
     })
 }
 
-
-export const verifyToken = (token:string) =>
-  new Promise((resolve, reject) => {
-    jwt.verify(token, process.env.JWT_SECRET as string, (err, payload) => {
-      if (err) { 
-          reject(err)
-          throw new Error('ERROR: Cant verify token')
-      }
-      resolve(payload)
+export const verifyToken = (token: string) =>
+    new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.JWT_SECRET as string, (err, payload) => {
+            if (err) {
+                reject(err)
+                throw new Error('ERROR: Cant verify token')
+            }
+            resolve(payload)
+        })
     })
-  })
 
 export const checkPassword = (
     passwordInDB: string,

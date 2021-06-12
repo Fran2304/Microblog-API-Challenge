@@ -11,9 +11,7 @@ import {
     updateComment,
     deleteComment,
     readPublishedComments,
-    // ProcessCommentLike,
-    // likeComment,
-    // dislikeComment
+    ProcessCommentLike,
 } from '../services/comments/crudCommentService'
 
 const prisma = new PrismaClient()
@@ -78,7 +76,7 @@ beforeAll(async () => {
                 createdAt: date,
                 content: 'realizar una almohada',
                 published: true,
-                likesQuantity: 0,
+                likesQuantity: 1,
                 authorId: secondUser?.id ?? 0,
             },
             {
@@ -120,7 +118,7 @@ beforeAll(async () => {
                 createdAt: date,
                 content: 'pasame la receta',
                 published: true,
-                likesQuantity: 0,
+                likesQuantity: 1,
                 authorId: secondUser?.id ?? 0,
                 postId: firstPost?.id ?? 0,
             },
@@ -136,6 +134,15 @@ beforeAll(async () => {
     })
 
     console.log('✨ 2 comments successfully created!')
+
+    await prisma.commentLikes.createMany({
+        data: [
+            {
+                authorId: 1,
+                commentId: 2,
+            },
+        ],
+    })
 })
 
 // Test create a comment
@@ -163,6 +170,20 @@ describe('create a comment', () => {
             'content',
             'El mejor comentario'
         )
+    })
+})
+
+// Test read comment
+describe('read a comment', () => {
+    it('should return a coment', async () => {
+        const comment = await readComment('1', '1')
+        expect(comment.result).toHaveProperty('content', 'delicioso')
+    })
+    it('should return an error if we pass a comment id that not exists', async () => {
+        await expect(readComment('1', '100')).rejects.toThrowError(ErrorHandler)
+    })
+    it('should return an error if the comment is not realted to the post', async () => {
+        await expect(readComment('2', '2')).rejects.toThrowError(ErrorHandler)
     })
 })
 
@@ -196,6 +217,66 @@ describe('update a comment', () => {
     })
 })
 
+// Test read published comment
+describe('read all published comments', () => {
+    it('should all comments published', async () => {
+        const comments = await readPublishedComments('1')
+        expect(comments.result).toHaveLength(3)
+    })
+    it('should return null if we pass a post without comments', async () => {
+        const comments = await readPublishedComments('3')
+        await expect(comments.result).toBe(null)
+    })
+    it('should return error if we pass a post id that not exists', async () => {
+        await expect(readPublishedComments('100')).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+})
+
+// Test process like
+
+const jsonLike = {
+    like: true,
+}
+
+const jsonDislike = {
+    like: false,
+}
+
+describe('process like', () => {
+    it('should return an error if the comment does not exist', async () => {
+        await expect(
+            ProcessCommentLike(1, '', '100', jsonLike)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+
+    // Like
+    it('should return 1 if we give a like to a comment that does not have any like', async () => {
+        const postToLike = await ProcessCommentLike(2, '', '1', jsonLike)
+        console.log(postToLike)
+        expect(postToLike.result).toEqual(1)
+    })
+
+    it('should return error if we give a like to a comment with like', async () => {
+        await expect(
+            ProcessCommentLike(1, '', '2', jsonLike)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+
+    // Dislike
+    it('should return 0 if we give a dislike to a comment that has 1 like', async () => {
+        const postToDislike = await ProcessCommentLike(1, '', '2', jsonDislike)
+        console.log(postToDislike.result)
+        expect(postToDislike.result).toEqual(0)
+    })
+    it('should return error if we give a dislike a comment that was not previously liked for user', async () => {
+        await expect(
+            ProcessCommentLike(2, '', '1', jsonLike)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+})
+
 // Test delete
 describe('delete a comment', () => {
     it('should return comment deleted', async () => {
@@ -221,36 +302,6 @@ describe('delete a comment', () => {
         await expect(deleteComment(2, '1', '1')).rejects.toThrowError(
             ErrorHandler
         )
-    })
-})
-
-// Test read published comment
-describe('read all published comments', () => {
-    it('should all comments published', async () => {
-        const comments = await readPublishedComments('1')
-        expect(comments.result).toHaveLength(2)
-    })
-    it('should return null if we pass a post without comments', async () => {
-        const comments = await readPublishedComments('3')
-        await expect(comments.result).toBe(null)
-    })
-    it('should return error if we pass a post id that not exists', async () => {
-        await expect(readPublishedComments('100')).rejects.toThrowError(
-            ErrorHandler
-        )
-    })
-})
-// Test read comment
-describe('read a comment', () => {
-    it('should return a coment', async () => {
-        const comment = await readComment('1', '1')
-        expect(comment.result).toHaveProperty('content', 'delicioso')
-    })
-    it('should return an error if we pass a comment id that not exists', async () => {
-        await expect(readComment('1', '100')).rejects.toThrowError(ErrorHandler)
-    })
-    it('should return an error if the comment is not realted to the post', async () => {
-        await expect(readComment('2', '2')).rejects.toThrowError(ErrorHandler)
     })
 })
 

@@ -10,7 +10,7 @@ export const createComment = async (
         req.params.postId,
         req.body
     )
-    res.status(create.status).end()
+    res.status(create.status).json({ data: create.result }).end()
 }
 
 export const updateComment = async (

@@ -115,6 +115,14 @@ export const signInUser = async (params: userType) => {
         if (!pass) {
             throw new ErrorHandler('ERROR: passwords dont match', 401, '')
         }
+        await prisma.user.update({
+            where: {
+                id: readUser.id,
+            },
+            data: {
+                active: true,
+            },
+        })
         const token = newToken(readUser.id)
         return { result: token, status: 200 }
     } catch (e) {
@@ -193,6 +201,9 @@ export const protect = async (token: string) => {
         })
         if (user == null) {
             throw new Error('ERROR: invalid user id')
+        }
+        if (!user.active) {
+            throw new Error('ERROR: user needs to sign in first')
         }
         return { result: user.id, status: 200 }
     } catch (e) {

@@ -17,9 +17,9 @@ export const createComment = async (
 
         if (!params.content) {
             throw new ErrorHandler(
-                'Content cant be empty',
+                'ERROR: Content cant be empty',
                 411,
-                'Content cant be empty'
+                'ERROR: Content cant be empty'
             )
         }
         const post = await prisma.post.findFirst({
@@ -63,7 +63,7 @@ export const updateComment = async (
             },
         })
         if (commentToUpdate == null) {
-            throw new Error('cant update a comment that does not exist ')
+            throw new Error('ERROR: cant update a comment that does not exist ')
         }
         commentToUpdate = await prisma.comment.findFirst({
             where: {
@@ -73,7 +73,7 @@ export const updateComment = async (
         })
         if (commentToUpdate == null) {
             throw new Error(
-                'cant update comment because its not related to post'
+                'ERROR: cant update comment because its not related to post'
             )
         }
 
@@ -85,7 +85,9 @@ export const updateComment = async (
             },
         })
         if (commentToUpdate == null) {
-            throw new Error('cant update comment that does not belongs to user')
+            throw new Error(
+                'ERROR: cant update comment that does not belongs to user'
+            )
         }
         let commentUpdated = await prisma.comment.update({
             where: {
@@ -117,8 +119,12 @@ export const deleteComment = async (
             },
         })
         if (commentToDelete == null) {
-            throw new Error('cant delete a comment that does not exist')
+            throw new Error('ERROR: cant delete a comment that does not exist')
         }
+        const delCommentLikes: number = await prisma.$executeRaw(
+            `DELETE from "CommentLikes" WHERE comment_id=${cId};`
+        )
+        console.log(`comment likes:${delCommentLikes}`)
         commentToDelete = await prisma.comment.findFirst({
             where: {
                 id: cId,
@@ -127,7 +133,7 @@ export const deleteComment = async (
         })
         if (commentToDelete == null) {
             throw new Error(
-                'cant delete comment because its not related to post'
+                'ERROR: cant delete comment because its not related to post'
             )
         }
         commentToDelete = await prisma.comment.findFirst({
@@ -139,7 +145,7 @@ export const deleteComment = async (
         })
         if (commentToDelete == null) {
             throw new Error(
-                'cant delete a comment that does not belongs to user'
+                'ERROR: cant delete a comment that does not belongs to user'
             )
         }
         await prisma.comment.delete({
@@ -192,7 +198,7 @@ export const readComment = async (postId: string, commentId: string) => {
             },
         })
         if (comment == null) {
-            throw new Error('ERROR: comment that does not exist')
+            throw new Error('ERROR: comment does not exist')
         }
         comment = await prisma.comment.findFirst({
             where: {
@@ -211,18 +217,29 @@ export const readComment = async (postId: string, commentId: string) => {
 
 export const ProcessCommentLike = async (
     authorId: number,
+    postId: string,
     commentId: string,
     likeData: likeJson
 ) => {
     try {
         const cId = fixId(commentId)
+        const pId = fixId(postId)
         let comment = await prisma.comment.findFirst({
             where: {
                 id: cId,
             },
         })
         if (comment == null) {
-            throw new Error('ERROR: comment does not exist ')
+            throw new Error('ERROR: the comment does not exist ')
+        }
+        const commentToLike = await prisma.comment.findFirst({
+            where: {
+                id: cId,
+                postId: pId,
+            },
+        })
+        if (commentToLike == null) {
+            throw new Error('ERROR: the comment is not related to post')
         }
         let rLike: resultLike = { total: 0 }
         if (likeData.like) {
@@ -236,7 +253,6 @@ export const ProcessCommentLike = async (
                 )
             }
         }
-
         return { result: rLike.total, status: 200 }
     } catch (e) {
         console.log(e.message)

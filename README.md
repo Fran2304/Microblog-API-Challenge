@@ -7,7 +7,7 @@ Instructions for the server:
 1. Clone the repo
 2. Create a .env file and add the variables defined in the .env.example
 3. run the command > npm install
-4. run the command > npn run database
+4. run the command > npn run prisma:migrate:run
 5. run the command > npm run compile
 6. run the command > npm run server
 7. Check under the folder Postman, there is a json file of the workspace for the request
@@ -15,7 +15,7 @@ Instructions for the server:
 9. In the workspace, find "User SignUp" request.
 10. Edit the body request with your email and send.
 11. You will get the response a jwt token. Copy that value.
-12. In Postman/ Insomnia application, create an evironment VARIABLE with the name "authtoken". The INITIAL VALUE of this VARIABLE will be the token previously copied.
+12. In Postman/Insomnia application, create an evironment VARIABLE with the name "authtoken". The VALUE of this VARIABLE will be the token previously copied.
 
 Instructions for the test:
 

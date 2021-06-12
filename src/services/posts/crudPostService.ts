@@ -81,9 +81,11 @@ export const deletePost = async (authorId: number, postId: string) => {
                 id: pId,
             },
         })
+
         if (postToDelete == null) {
             throw new Error('ERROR: cant delete a post that does not exist')
         }
+
         postToDelete = await prisma.post.findFirst({
             where: {
                 id: pId,
@@ -95,6 +97,19 @@ export const deletePost = async (authorId: number, postId: string) => {
                 'ERROR: cant delete a post that does not belongs to user'
             )
         }
+        const delPostLikes: number = await prisma.$executeRaw(
+            `DELETE from "PostLikes" WHERE post_id=${pId};`
+        )
+        const delCommentLikes: number = await prisma.$executeRaw(
+            `DELETE from "CommentLikes" WHERE comment_id in (SELECT id from "Comment" WHERE post_id=${pId});`
+        )
+        const delComments: number = await prisma.$executeRaw(
+            `DELETE from "Comment" WHERE post_id=${pId};`
+        )
+
+        console.log(`post likes: ${delPostLikes}`)
+        console.log(`comment likes:${delCommentLikes}`)
+        console.log(`comments :${delComments}`)
         await prisma.post.delete({
             where: {
                 id: pId,

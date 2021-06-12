@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { userType } from '../../type/types'
+import { updateUserType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { plainToClass } from 'class-transformer'
 import { UserUpdateDto } from '../../Dtos/userDto'
@@ -13,16 +13,42 @@ export const readUserService = async (id: number) => {
                 id: id,
             },
         })
+        if (!readUser) {
+            throw new Error('ERROR: user does not exist')
+        }
         const userDto = new UserUpdateDto()
-        if (readUser?.visibleEmail) userDto.email
+        userDto.nickname = readUser.nickname
+        if (readUser.visibleEmail) {
+            userDto.email = readUser.email
+        }
+        if (readUser.visibleName) {
+            userDto.firstName = readUser.firstName
+            userDto.lastName = readUser.lastName
+        }
+        if (readUser.bio) {
+            userDto.bio = readUser.bio
+        }
+
         return { result: plainToClass(UserUpdateDto, userDto), status: 200 }
     } catch (e) {
-        throw new ErrorHandler('cant get user', 404, e)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }
 
-export const updateUserService = async (id: number, params: userType) => {
+export const updateUserService = async (id: number, params: updateUserType) => {
     try {
+        if (params.nickname) {
+            const readUser = await prisma.user.findUnique({
+                where: {
+                    nickname: params.nickname,
+                },
+            })
+            if (readUser) {
+                throw new Error(
+                    'ERROR: nickname is already used for another account'
+                )
+            }
+        }
         await prisma.user.update({
             where: {
                 id: id,
@@ -33,6 +59,6 @@ export const updateUserService = async (id: number, params: userType) => {
         })
         return { result: null, status: 204 }
     } catch (e) {
-        throw new ErrorHandler('cant update user', 404, e)
+        throw new ErrorHandler(e.message, 404, e)
     }
 }

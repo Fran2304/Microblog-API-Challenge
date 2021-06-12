@@ -186,10 +186,6 @@ export const protect = async (token: string) => {
             throw new Error('ERROR: token cant be empty')
         }
         const payload = (await verifyToken(token)) as tokenPayload
-
-        if (!isNumber(payload.id)) {
-            throw new Error('ERROR: invalid user id')
-        }
         const user = await prisma.user.findUnique({
             where: {
                 id: payload.id,

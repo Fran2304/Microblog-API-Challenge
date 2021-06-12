@@ -20,7 +20,7 @@ export const sendMailOfConfirmationCode = (
                 console.log(response[0])
             })
         } catch (error) {
-            console.log(error.message)
+            throw new Error(error.message)
         }
     }
 }

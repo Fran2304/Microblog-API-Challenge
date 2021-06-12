@@ -121,6 +121,10 @@ export const deleteComment = async (
         if (commentToDelete == null) {
             throw new Error('ERROR: cant delete a comment that does not exist')
         }
+        const delCommentLikes: number = await prisma.$executeRaw(
+            `DELETE from "CommentLikes" WHERE comment_id=${cId};`
+        )
+        console.log(`comment likes:${delCommentLikes}`)
         commentToDelete = await prisma.comment.findFirst({
             where: {
                 id: cId,

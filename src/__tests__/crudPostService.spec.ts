@@ -43,17 +43,6 @@ beforeAll(async () => {
             },
         ],
     })
-    const firstUser = await prisma.user.findFirst({
-        where: {
-            email: 'flor@mundo.com',
-        },
-    })
-
-    const secondUser = await prisma.user.findFirst({
-        where: {
-            email: 'rocio@mundo.com',
-        },
-    })
 
     console.log('✨ 2 users successfully created!')
     const date: Date = new Date(2021, 1, 12)
@@ -66,7 +55,7 @@ beforeAll(async () => {
                 content: 'mi primer postre que hice fue chocotorta',
                 published: true,
                 likesQuantity: 0,
-                authorId: firstUser?.id ?? 0,
+                authorId: 1,
             },
             {
                 title: 'manualidades',
@@ -74,23 +63,19 @@ beforeAll(async () => {
                 content: 'realizar una almohada',
                 published: true,
                 likesQuantity: 1,
-                authorId: secondUser?.id ?? 0,
+                authorId: 2,
+            },
+            {
+                title: 'los rompecabezas',
+                createdAt: date,
+                content: '100 piezas',
+                published: true,
+                likesQuantity: 0,
+                authorId: 2,
             },
         ],
     })
-
-    const firstPost = await prisma.post.findFirst({
-        where: {
-            title: 'mi primer postre',
-        },
-    })
-
-    const secondPost = await prisma.post.findFirst({
-        where: {
-            title: 'manualidades',
-        },
-    })
-    console.log('✨ 2 posts successfully created!')
+    console.log('✨ 3 posts successfully created!')
 
     // create the comment
     await prisma.comment.createMany({
@@ -100,29 +85,37 @@ beforeAll(async () => {
                 content: 'delicioso',
                 published: true,
                 likesQuantity: 0,
-                authorId: firstUser?.id ?? 0,
-                postId: firstPost?.id ?? 0,
+                authorId: 1,
+                postId: 1,
             },
             {
                 createdAt: date,
                 content: 'pasame la receta',
                 published: true,
-                likesQuantity: 0,
-                authorId: secondUser?.id ?? 0,
-                postId: firstPost?.id ?? 0,
+                likesQuantity: 1,
+                authorId: 2,
+                postId: 1,
             },
             {
                 createdAt: date,
                 content: 'cuales son los materiales',
                 published: true,
                 likesQuantity: 0,
-                authorId: secondUser?.id ?? 0,
-                postId: secondPost?.id ?? 0,
+                authorId: 2,
+                postId: 2,
+            },
+            {
+                createdAt: date,
+                content: 'me gustan los puzzles!',
+                published: true,
+                likesQuantity: 0,
+                authorId: 1,
+                postId: 3,
             },
         ],
     })
 
-    console.log('✨ 2 comments successfully created!')
+    console.log('✨ 4 comments successfully created!')
 
     await prisma.postLikes.createMany({
         data: [
@@ -160,7 +153,7 @@ describe('create a post', () => {
 describe('show all post published', () => {
     it('should return the number of post pusblished', async () => {
         const allPost = await readPublishedPosts()
-        expect(allPost.result).toHaveLength(3)
+        expect(allPost.result).toHaveLength(4)
         expect(allPost.result[0].title).toBe('mi primer postre')
     })
 })
@@ -254,7 +247,7 @@ describe('delete a post', () => {
     })
 
     it('should return an error if the post does not belong to user', async () => {
-        await expect(deletePost(1, '1')).rejects.toThrowError(ErrorHandler)
+        await expect(deletePost(1, '2')).rejects.toThrowError(ErrorHandler)
     })
 })
 

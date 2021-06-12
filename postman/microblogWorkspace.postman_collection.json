@@ -7,6 +7,202 @@
 	},
 	"item": [
 		{
+			"name": "User SignUp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"email\": \"fernando@ravn.co\",\r\n        \"password\": \"cotrasena123\",\r\n        \"nickname\":\"fer2021\",\r\n        \"firstName\":\"fer\",\r\n        \"lastName\":\"ap\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3002/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User SignIn",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"email\": \"ferdando@ravn.co\",\r\n        \"password\": \"cotrasena123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3002/signin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User SignOut",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{authtoken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3002/signout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"signout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User confirmation email",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"confirmationCode\": \"ZyOPCRCDPbeAzBl45iT12JTyw\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3002/emailconfirmation",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"emailconfirmation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update account (depending on this, \"Read logged user\" will show or not the data)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{authtoken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"erika\",\r\n    \"lastName\": \"Rojas\",\r\n\t\"visibleEmail\": true,\r\n\t\"visibleName\": true,\r\n    \"nickname\":\"burbuja\",\r\n    \"bio\": \"que felicidad\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3002/api/accounts/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"api",
+						"accounts",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read logged user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{authtoken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3002/api/accounts/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"api",
+						"accounts",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create post  with title and content, published is optional",
 			"request": {
 				"method": "POST",
@@ -19,7 +215,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n        \"title\": \"viscoso pero sabroso\",\r\n        \"content\": \"mi primer cena fue una salchipapa muy deliciosa.\",\r\n        \"published\": false\r\n}",
+					"raw": "{\r\n        \"title\": \"felicidades\",\r\n        \"content\": \"deseamos que pase un lindo dia\",\r\n        \"published\": false\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -55,7 +251,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n        \"title\": \"content001\",\r\n        \"content\": \"content1\",\r\n        \"published\": false\r\n}",
+					"raw": "{\r\n        \"title\": \"contentitle001\",\r\n        \"content\": \"content001\",\r\n        \"published\": true\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -63,7 +259,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3002/api/accounts/posts/7",
+					"raw": "http://localhost:3002/api/accounts/posts/10",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -73,7 +269,7 @@
 						"api",
 						"accounts",
 						"posts",
-						"7"
+						"10"
 					]
 				}
 			},
@@ -100,7 +296,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3002/api/accounts/posts/1",
+					"raw": "http://localhost:3002/api/accounts/posts/14",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -110,7 +306,7 @@
 						"api",
 						"accounts",
 						"posts",
-						"1"
+						"14"
 					]
 				}
 			},
@@ -203,7 +399,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3002/api/accounts/posts/9",
+					"raw": "http://localhost:3002/api/accounts/posts/14",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -213,7 +409,7 @@
 						"api",
 						"accounts",
 						"posts",
-						"9"
+						"14"
 					]
 				}
 			},
@@ -232,7 +428,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{       \r\n        \"content\": \"mi segundo comentario al post.\",\r\n        \"published\": false\r\n}",
+					"raw": "{       \r\n        \"content\": \"mi segundo comentario al post 3.\",\r\n        \"published\": false\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -240,7 +436,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3002/api/accounts/posts/5/comments/",
+					"raw": "http://localhost:3002/api/accounts/posts/3/comments/",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -250,7 +446,7 @@
 						"api",
 						"accounts",
 						"posts",
-						"5",
+						"3",
 						"comments",
 						""
 					]
@@ -271,7 +467,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n        \"content\": \"Actualziacion del contenido.\",\r\n        \"published\": false\r\n    }",
+					"raw": "{\r\n        \"content\": \"Actualizacion del contenido al commentario 1.\",\r\n        \"published\": false\r\n    }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -279,7 +475,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3002/api/accounts/posts/5/comments/4",
+					"raw": "http://localhost:3002/api/accounts/posts/2/comments/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -289,9 +485,9 @@
 						"api",
 						"accounts",
 						"posts",
-						"5",
+						"2",
 						"comments",
-						"4"
+						"1"
 					]
 				}
 			},
@@ -318,7 +514,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3002/api/accounts/posts/1/comments/1",
+					"raw": "http://localhost:3002/api/accounts/posts/1/comments/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -330,7 +526,7 @@
 						"posts",
 						"1",
 						"comments",
-						"1"
+						"2"
 					]
 				}
 			},
@@ -406,128 +602,7 @@
 			"response": []
 		},
 		{
-			"name": "User SignUp",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n        \"email\": \"edith@ravn.co\",\r\n        \"password\": \"cotrasenaABC\",\r\n        \"nickname\":\"ed2026\",\r\n        \"firstName\":\"edith\",\r\n        \"lastName\":\"tiravanti\"\r\n    }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3002/signup",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3002",
-					"path": [
-						"signup"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "User SignIn",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n        \"email\": \"fran@ravn.co\",\r\n        \"password\": \"cotrasena123456\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3002/signin",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3002",
-					"path": [
-						"signin"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "User SignOut",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{authtoken}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3002/signout",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3002",
-					"path": [
-						"signout"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "User confirmation email",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"confirmationCode\": \"ZyOPCRCDPbeAzBl45iT12JTyw\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3002/emailconfirmation",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3002",
-					"path": [
-						"emailconfirmation"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update account",
+			"name": "Like or dislike a comment (true for like,  false for dislike)",
 			"request": {
 				"method": "PATCH",
 				"header": [
@@ -539,7 +614,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstName\": \"erika\",\r\n    \"lastName\": \"Rojas\",\r\n\t\"visibleEmail\": true,\r\n\t\"visibleName\": true,\r\n    \"nickname\":\"burbuja\",\r\n    \"bio\": \"que felicidad\"\r\n}",
+					"raw": "{\r\n        \"like\":true\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -547,7 +622,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3002/api/accounts/",
+					"raw": "http://localhost:3002/api/accounts/posts/10/comments/10",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -556,46 +631,10 @@
 					"path": [
 						"api",
 						"accounts",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Read user",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{authtoken}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3002/api/accounts/",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3002",
-					"path": [
-						"api",
-						"accounts",
-						""
+						"posts",
+						"10",
+						"comments",
+						"10"
 					]
 				}
 			},

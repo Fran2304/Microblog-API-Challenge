@@ -66,7 +66,7 @@ export const updatePost = async (
                 ...params,
             },
         })
-        
+
         return { result: plainToClass(PostDto, postUpdated), status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, 404, e)

@@ -3,7 +3,7 @@
 import { PrismaClient } from '@prisma/client'
 import { ErrorHandler } from './../errorHandler/errorHandler'
 
-import { signUpUser } from './../services/auth/authService'
+import { readUserService } from './../services/users/crudUserService'
 
 const prisma = new PrismaClient()
 
@@ -38,37 +38,35 @@ beforeAll(async () => {
     })
 })
 
-const userRegistered = {
-    email: 'rocio@mundo.com',
-    nickname: 'corazon',
-    firstName: 'rocio',
-    lastName: 'Sanqui',
-    password: 'contrasena456',
-    hashActivation: '222222222',
-    visibleEmail: true,
-    visibleName: true,
-}
+// const userRegistered = {
+//     email: 'rocio@mundo.com',
+//     nickname: 'corazon',
+//     firstName: 'rocio',
+//     lastName: 'Sanqui',
+//     password: 'contrasena456',
+//     hashActivation: '222222222',
+//     visibleEmail: true,
+//     visibleName: true,
+// }
 
-const newUser = {
-    email: 'spiderman@gmail.com',
-    nickname: 'parker',
-    firstName: 'Micaela',
-    lastName: 'Rojas',
-    password: '12345',
-    visibleEmail: true,
-    visibleName: true,
-    hashActivation: '222222222',
-}
+// const newUser = {
+//     email: 'spiderman@gmail.com',
+//     nickname: 'parker',
+//     firstName: 'Micaela',
+//     lastName: 'Rojas',
+//     password: '12345',
+//     visibleEmail: true,
+//     visibleName: true,
+//     hashActivation: '222222222',
+// }
 
-describe('create a post', () => {
-    it('should create a user', async () => {
-        const postCreated = await signUpUser(newUser)
+describe('read a user', () => {
+    it('should get a user', async () => {
+        const postCreated = await readUserService(1)
         expect(postCreated.result).toHaveProperty('content', 'Peru 2 Ecuador 1')
     })
-    it('should return an error if the user exist', async () => {
-        await expect(signUpUser(userRegistered)).rejects.toThrowError(
-            ErrorHandler
-        )
+    it('should return an error if the user does not exist', async () => {
+        await expect(readUserService(5)).rejects.toThrowError(ErrorHandler)
     })
 })
 

@@ -29,6 +29,7 @@ export const updateComment = async (
         const likeComment = await commentService.ProcessCommentLike(
             req.user.id,
             req.params.postId,
+            req.params.commentId,
             req.body
         )
         res.status(likeComment.status).json({ data: likeComment.result })

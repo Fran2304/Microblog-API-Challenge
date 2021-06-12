@@ -6,7 +6,7 @@ export const createComment = async (
     res: express.Response
 ): Promise<void> => {
     const create = await commentService.createComment(
-        req.params.id,
+        req.user.id,
         req.params.postId,
         req.body
     )
@@ -19,7 +19,7 @@ export const updateComment = async (
 ): Promise<void> => {
     if (!JSON.stringify(req.body).includes('like')) {
         const update = await commentService.updateComment(
-            req.params.id,
+            req.user.id,
             req.params.postId,
             req.params.commentId,
             req.body
@@ -27,7 +27,7 @@ export const updateComment = async (
         res.status(update.status).json({ data: update.result })
     } else {
         const likeComment = await commentService.ProcessCommentLike(
-            req.params.id,
+            req.user.id,
             req.params.postId,
             req.body
         )
@@ -40,7 +40,7 @@ export const deleteComment = async (
     res: express.Response
 ): Promise<void> => {
     const deletion = await commentService.deleteComment(
-        req.params.id,
+        req.user.id,
         req.params.postId,
         req.params.commentId
     )

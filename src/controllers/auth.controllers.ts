@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction } from 'express'
 import * as userService from '../services/auth/authService'
 
 export const signup = async (
@@ -13,7 +13,7 @@ export const signup = async (
         const token = userService.newToken(user.result.id)
 
         res.status(user.status).json({
-            mensaje: 'Complete registration',
+            data: 'Complete registration',
             token: token,
         })
     }
@@ -26,7 +26,7 @@ export const signin = async (
     const user = await userService.signInUser(req.body)
     if (user.result) {
         res.status(201).json({
-            mensaje: 'Correct authentication',
+            data: 'Correct authentication',
             token: user.result,
         })
     }
@@ -40,8 +40,7 @@ export const signout = async (
     const user = await userService.signOutUser(authToken)
     if (user.result) {
         res.status(201).json({
-            mensaje: 'Sing out correct',
-            token: user.result,
+            data: 'Sign out correct',
         })
     }
 }
@@ -50,42 +49,26 @@ export const verifyConfirmationCode = async (
     req: express.Request,
     res: express.Response
 ): Promise<void> => {
-    const isVerified = await userService.VerifyCode(req.body)
+    const isVerified = await userService.verifyCode(req.body)
     if (isVerified.result) {
         res.status(200).json({
-            mensaje: 'Correct email verification',
+            data: 'Correct email verification',
         })
     }
 }
-// export const protect = async (
-//     req: express.Request,
-//     res: express.Response,
-//     next: NextFunction
-// ) => {
-//     const bearer = req.headers.authorization
 
-//     if (!bearer || !bearer.startsWith('Bearer ')) {
-//         return res.status(401).end()
-//     }
-
-//     const token = bearer.split('Bearer ')[1]
-//     let payload
-//     try {
-//         payload = await verifyToken(token)
-//     } catch (e) {
-//         return res.status(401).end()
-//     }
-
-//     const user = await prisma.user.findUnique({
-//         where: {
-//             id: payload.id,
-//         },
-//     })
-
-//     if (!user) {
-//         return res.status(401).end()
-//     }
-
-//     req.body.user = user
-//     next()
-// }
+export const protect = async (
+    req: express.Request,
+    res: express.Response,
+    next: NextFunction
+) => {
+    const authToken = req.headers.authorization as string
+    const userRead = await userService.protect(authToken)
+    if (!userRead) {
+        return res.status(401).json({
+            data: 'user is not authorized',
+        })
+    }
+    req.user = { id: userRead.result }
+    next()
+}

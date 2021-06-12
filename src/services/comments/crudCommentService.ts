@@ -6,7 +6,7 @@ import { fixId } from '../../Helpers/dataHelper'
 const prisma = new PrismaClient()
 
 export const createComment = async (
-    authorId: string,
+    authorId: number,
     postId: string,
     params: commentType
 ) => {
@@ -33,7 +33,7 @@ export const createComment = async (
                 createdAt: today,
                 published: params.published != null ? params.published : true,
                 likesQuantity: 0,
-                authorId: fixId(authorId),
+                authorId: authorId,
                 postId: fixId(postId),
             },
         })
@@ -44,7 +44,7 @@ export const createComment = async (
 }
 
 export const updateComment = async (
-    authorId: string,
+    authorId: number,
     postId: string,
     commentId: string,
     params: commentType
@@ -74,7 +74,7 @@ export const updateComment = async (
             where: {
                 id: fixId(commentId),
                 postId: fixId(postId),
-                authorId: fixId(authorId),
+                authorId: authorId,
             },
         })
         if (commentToUpdate == null) {
@@ -96,7 +96,7 @@ export const updateComment = async (
 }
 
 export const deleteComment = async (
-    authorid: string,
+    authorid: number,
     postId: string,
     commentId: string
 ) => {
@@ -124,7 +124,7 @@ export const deleteComment = async (
             where: {
                 id: fixId(commentId),
                 postId: fixId(postId),
-                authorId: fixId(authorid),
+                authorId: authorid,
             },
         })
         if (commentToDelete == null) {
@@ -177,7 +177,7 @@ export const readComment = async (postId: string, commentId: string) => {
             },
         })
         if (comment == null) {
-            throw new Error('comment that does not exist')
+            throw new Error('ERROR: comment that does not exist')
         }
         comment = await prisma.comment.findFirst({
             where: {
@@ -186,7 +186,7 @@ export const readComment = async (postId: string, commentId: string) => {
             },
         })
         if (comment == null) {
-            throw new Error('comment is not related to post')
+            throw new Error('ERROR: comment is not related to post')
         }
         return { result: comment, status: 200 }
     } catch (e) {
@@ -195,7 +195,7 @@ export const readComment = async (postId: string, commentId: string) => {
 }
 
 export const ProcessCommentLike = async (
-    authorId: string,
+    authorId: number,
     commentId: string,
     likeData: likeJson
 ) => {
@@ -206,18 +206,14 @@ export const ProcessCommentLike = async (
             },
         })
         if (comment == null) {
-            throw new Error('cant like a comment that does not exist ')
+            throw new Error('ERROR: comment does not exist ')
         }
         if (likeData.like) {
-            likeComment(
-                fixId(authorId),
-                fixId(commentId),
-                comment.likesQuantity
-            )
+            likeComment(authorId, fixId(commentId), comment.likesQuantity)
         } else {
             if (comment.likesQuantity != 0) {
                 dislikeComment(
-                    fixId(authorId),
+                    authorId,
                     fixId(commentId),
                     comment.likesQuantity
                 )
@@ -281,7 +277,7 @@ const dislikeComment = async (
         })
         if (commentLike == null) {
             throw new Error(
-                'cant dislike a comment that was not previously liked for user'
+                'ERROR: cant dislike a comment that was not previously liked for user'
             )
         }
         await prisma.comment.update({

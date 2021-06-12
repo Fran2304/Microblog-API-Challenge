@@ -36,7 +36,7 @@ export const updatePost = async (
 ) => {
     try {
         if (!params.title || !params.content) {
-            throw new Error('Error: Content, title cant be empty')
+            throw new Error('ERROR: Content, title cant be empty')
         }
         const pId = fixId(postId)
         let postToUpdate = await prisma.post.findFirst({
@@ -140,30 +140,26 @@ export const ProcessPostLike = async (
     likeData: likeJson
 ) => {
     try {
+        const pId = fixId(postId)
         let post = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
         })
         if (post == null) {
-            throw new Error('ERROR: cant like a post that does not exist')
+            throw new Error('ERROR: the post does not exist')
         }
         let resultLike
         if (likeData.like) {
-            resultLike = await likePost(
-                authorId,
-                fixId(postId),
-                post.likesQuantity
-            )
+            resultLike = await likePost(authorId, pId, post.likesQuantity)
         } else {
             if (post.likesQuantity != 0) {
                 resultLike = await dislikePost(
                     authorId,
-                    fixId(postId),
+                    pId,
                     post.likesQuantity
                 )
             }
-            // console.log('dislike', resultLike)
         }
         return { result: resultLike, status: 204 }
     } catch (e) {

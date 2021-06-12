@@ -1,3 +1,7 @@
 export const fixId = (idString: string) => {
-    return Number.parseInt(idString)
+    const pId = parseInt(idString)
+    if (isNaN(pId)) {
+        throw new Error('ERROR: id is not a number')
+    }
+    return pId
 }

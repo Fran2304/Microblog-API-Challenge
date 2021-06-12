@@ -5,7 +5,7 @@ export const createPost = async (
     req: express.Request,
     res: express.Response
 ): Promise<void> => {
-    const create = await postService.createPost(req.params.id, req.body)
+    const create = await postService.createPost(req.user.id, req.body)
     res.status(create.status).end()
 }
 
@@ -15,14 +15,14 @@ export const updatePost = async (
 ): Promise<void> => {
     if (!JSON.stringify(req.body).includes('like')) {
         const update = await postService.updatePost(
-            req.params.id,
+            req.user.id,
             req.params.postId,
             req.body
         )
         res.status(update.status).json({ data: update.result })
     } else {
         const likePost = await postService.ProcessPostLike(
-            req.params.id,
+            req.user.id,
             req.params.postId,
             req.body
         )
@@ -35,7 +35,7 @@ export const deletePost = async (
     res: express.Response
 ): Promise<void> => {
     const deletion = await postService.deletePost(
-        req.params.id,
+        req.user.id,
         req.params.postId
     )
     res.status(deletion.status).json({ data: deletion.result })

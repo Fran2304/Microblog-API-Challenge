@@ -141,12 +141,12 @@ const emptyPost = {
 
 describe('create a post', () => {
     it('should create a post', async () => {
-        const postCreated = await createPost('1', examplePost)
+        const postCreated = await createPost(1, examplePost)
         const expected = { result: null, status: 204 }
         expect(postCreated).toEqual(expected)
     })
     it('should return an error if we dont pass anny content', async () => {
-        await expect(createPost('1', emptyPost)).rejects.toThrowError(Error)
+        await expect(createPost(1, emptyPost)).rejects.toThrowError(Error)
     })
 })
 
@@ -159,19 +159,19 @@ const exampleUpdate = {
 
 describe('update a post', () => {
     it('should update the content of a post', async () => {
-        const postUpdated = await updatePost('1', '1', exampleUpdate)
+        const postUpdated = await updatePost(1, '1', exampleUpdate)
         const expected = { result: null, status: 204 }
         expect(postUpdated).toEqual(expected)
     })
     it('should return error if the post does not exist', async () => {
         // const postUpdated = await updatePost('2', '100', exampleUpdate)
-        await expect(
-            updatePost('2', '100', exampleUpdate)
-        ).rejects.toThrowError(ErrorHandler)
+        await expect(updatePost(2, '100', exampleUpdate)).rejects.toThrowError(
+            ErrorHandler
+        )
     })
     it('should return error if the post does not exist', async () => {
         // const postUpdated = await updatePost('1', '2', exampleUpdate)
-        await expect(updatePost('1', '2', exampleUpdate)).rejects.toThrowError(
+        await expect(updatePost(1, '2', exampleUpdate)).rejects.toThrowError(
             ErrorHandler
         )
     })
@@ -181,15 +181,15 @@ describe('update a post', () => {
 
 describe('delete a post', () => {
     it('should return post deleted', async () => {
-        const postToDelete = await deletePost('2', '2')
+        const postToDelete = await deletePost(2, '2')
         expect(postToDelete.result).toHaveProperty('title', 'manualidades')
     })
     it('should return an error if we past a post that does not exist', async () => {
-        await expect(deletePost('2', '100')).rejects.toThrowError(ErrorHandler)
+        await expect(deletePost(2, '100')).rejects.toThrowError(ErrorHandler)
     })
 
     it('should return an error if the post does not belong to user', async () => {
-        await expect(deletePost('1', '1')).rejects.toThrowError(ErrorHandler)
+        await expect(deletePost(1, '1')).rejects.toThrowError(ErrorHandler)
     })
 })
 

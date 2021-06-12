@@ -5,10 +5,14 @@ import { fixId } from '../../Helpers/dataHelper'
 
 const prisma = new PrismaClient()
 
-export const createPost = async (authorId: string, params: postType) => {
+export const createPost = async (authorId: number, params: postType) => {
     try {
         if (!params.title || !params.content) {
-            throw new Error('Content cant be empty')
+            throw new ErrorHandler(
+                'ERROR: Content, title cant be empty',
+                411,
+                'ERROR: Content, title cant be empty'
+            )
         }
 
         const today: Date = new Date()
@@ -18,7 +22,7 @@ export const createPost = async (authorId: string, params: postType) => {
                 createdAt: today,
                 published: params.published != null ? params.published : true,
                 likesQuantity: 0,
-                authorId: fixId(authorId),
+                authorId: authorId,
             },
         })
         return { result: null, status: 204 }
@@ -28,14 +32,18 @@ export const createPost = async (authorId: string, params: postType) => {
 }
 
 export const updatePost = async (
-    authorId: string,
+    authorId: number,
     postId: string,
     params: postType
 ) => {
     try {
+        if (!params.title || !params.content) {
+            throw new Error('ERROR: Content, title cant be empty')
+        }
+        const pId = fixId(postId)
         let postToUpdate = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
         })
         if (postToUpdate == null) {
@@ -43,8 +51,8 @@ export const updatePost = async (
         }
         postToUpdate = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
-                authorId: fixId(authorId),
+                id: pId,
+                authorId: authorId,
             },
         })
         if (postToUpdate == null) {
@@ -54,7 +62,7 @@ export const updatePost = async (
         }
         await prisma.post.update({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
             data: {
                 ...params,
@@ -66,7 +74,7 @@ export const updatePost = async (
     }
 }
 
-export const deletePost = async (authorId: string, postId: string) => {
+export const deletePost = async (authorId: number, postId: string) => {
     try {
         let postToDelete = await prisma.post.findFirst({
             where: {
@@ -79,7 +87,7 @@ export const deletePost = async (authorId: string, postId: string) => {
         postToDelete = await prisma.post.findFirst({
             where: {
                 id: fixId(postId),
-                authorId: fixId(authorId),
+                authorId: authorId,
             },
         })
         if (postToDelete == null) {
@@ -129,24 +137,25 @@ export const readPost = async (id: string) => {
 }
 
 export const ProcessPostLike = async (
-    id: string,
+    authorId: number,
     postId: string,
     likeData: likeJson
 ) => {
     try {
+        const pId = fixId(postId)
         let post = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
         })
         if (post == null) {
-            throw new Error('ERROR: cant like a post that does not exist')
+            throw new Error('ERROR: the post does not exist')
         }
         if (likeData.like) {
-            likePost(fixId(id), fixId(postId), post.likesQuantity)
+            likePost(authorId, pId, post.likesQuantity)
         } else {
             if (post.likesQuantity != 0) {
-                dislikePost(fixId(id), fixId(postId), post.likesQuantity)
+                dislikePost(authorId, pId, post.likesQuantity)
             }
         }
         return { result: null, status: 204 }

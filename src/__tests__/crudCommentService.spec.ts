@@ -148,17 +148,17 @@ const emptyComment = {
 
 describe('create a comment', () => {
     it('should return an error if we dont pass any content', async () => {
-        await expect(
-            createComment('1', '1', emptyComment)
-        ).rejects.toThrowError(ErrorHandler)
+        await expect(createComment(1, '1', emptyComment)).rejects.toThrowError(
+            ErrorHandler
+        )
     })
     it('should return an error if we dont pass any content', async () => {
-        await expect(
-            createComment('1', '1', emptyComment)
-        ).rejects.toThrowError(ErrorHandler)
+        await expect(createComment(1, '1', emptyComment)).rejects.toThrowError(
+            ErrorHandler
+        )
     })
     it('should create a comment', async () => {
-        const postCreated = await createComment('1', '1', exampleComment)
+        const postCreated = await createComment(1, '1', exampleComment)
         const expected = { result: null, status: 204 }
         expect(postCreated).toEqual(expected)
     })
@@ -172,25 +172,25 @@ const exampleUpdate = {
 
 describe('update a comment', () => {
     it('should update a comment', async () => {
-        const postCreated = await updateComment('1', '1', '1', exampleUpdate)
+        const postCreated = await updateComment(1, '1', '1', exampleUpdate)
         const expected = { result: null, status: 204 }
         expect(postCreated).toEqual(expected)
     })
     it('should return an error if the comment does not exist', async () => {
         await expect(
-            updateComment('1', '1', '100', exampleUpdate)
+            updateComment(1, '1', '100', exampleUpdate)
         ).rejects.toThrowError(Error)
     })
 
     it('should return an error if the comment is not related to a post', async () => {
         await expect(
-            updateComment('2', '1', '3', exampleUpdate)
+            updateComment(2, '1', '3', exampleUpdate)
         ).rejects.toThrowError(Error)
     })
 
     it('should return an error if the comment is not related to the author', async () => {
         await expect(
-            updateComment('1', '2', '3', exampleUpdate)
+            updateComment(1, '2', '3', exampleUpdate)
         ).rejects.toThrowError(Error)
     })
 })
@@ -198,26 +198,26 @@ describe('update a comment', () => {
 // Test delete
 describe('delete a comment', () => {
     it('should return comment deleted', async () => {
-        const commentToDelete = await deleteComment('2', '2', '3')
+        const commentToDelete = await deleteComment(2, '2', '3')
         expect(commentToDelete.result).toHaveProperty(
             'content',
             'cuales son los materiales'
         )
     })
     it('should return an error if we past a comment that does not exist', async () => {
-        await expect(deleteComment('1', '1', '100')).rejects.toThrowError(
+        await expect(deleteComment(1, '1', '100')).rejects.toThrowError(
             ErrorHandler
         )
     })
 
     it('should return an error if the comment does not belong to post', async () => {
-        await expect(deleteComment('1', '2', '1')).rejects.toThrowError(
+        await expect(deleteComment(1, '2', '1')).rejects.toThrowError(
             ErrorHandler
         )
     })
 
     it('should return an error if the comment does not belong to user', async () => {
-        await expect(deleteComment('2', '1', '1')).rejects.toThrowError(
+        await expect(deleteComment(2, '1', '1')).rejects.toThrowError(
             ErrorHandler
         )
     })

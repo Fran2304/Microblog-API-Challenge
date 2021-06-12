@@ -40,8 +40,8 @@ app.patch('/emailconfirmation', asyncHandler(verifyConfirmationCode))
 
 app.use('/api/accounts', asyncHandler(protect))
 app.use('/api/accounts', usersRouter)
-app.use('/api/accounts/:id/posts', postsUserRouter)
-app.use('/api/accounts/:id/posts/:postId/comments', commentsUserRouter)
+app.use('/api/accounts/posts', postsUserRouter)
+app.use('/api/accounts/posts/:postId/comments', commentsUserRouter)
 
 app.use('/api/posts', postsRouter)
 app.use('/api/posts/:id/comments', commentsRouter)

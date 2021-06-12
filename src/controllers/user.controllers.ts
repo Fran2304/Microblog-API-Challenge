@@ -9,5 +9,13 @@ export const updateUser = async (
         req.user.id,
         req.body
     )
-    res.status(updatedUser.status).json({ message: updatedUser.status })
+    res.status(updatedUser.status).json({ data: updatedUser.result })
+}
+
+export const readUser = async (
+    req: express.Request,
+    res: express.Response
+): Promise<void> => {
+    const user = await userService.readUserService(req.user.id)
+    res.status(user.status).json({ data: user.result })
 }

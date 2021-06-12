@@ -21,6 +21,15 @@ export type userType = {
     visibleName: boolean
 }
 
+export type updateUserType = {
+    nickname: string
+    firstName: string
+    lastName: string
+    bio?: string
+    visibleEmail: boolean
+    visibleName: boolean
+}
+
 export type likeJson = {
     like: boolean
 }

@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { userType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { plainToClass } from 'class-transformer'
-import { UserDto } from '../../Dtos/userDto'
+import { UserUpdateDto } from '../../Dtos/userDto'
 
 const prisma = new PrismaClient()
 
@@ -13,8 +13,10 @@ export const readUserService = async (id: number) => {
                 id: id,
             },
         })
-        //const userDto= new UserUpdateDto();
-        return { result: plainToClass(UserDto, readUser), status: 200 }
+        const userDto= new UserUpdateDto();
+        if (readUser?.visibleEmail)
+        userDto.email
+        return { result: plainToClass(UserUpdateDto, userDto), status: 200 }
     } catch (e) {
         throw new ErrorHandler('cant get user', 404, e)
     }

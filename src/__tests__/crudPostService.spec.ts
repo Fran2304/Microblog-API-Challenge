@@ -148,8 +148,7 @@ const emptyPost = {
 describe('create a post', () => {
     it('should create a post', async () => {
         const postCreated = await createPost(1, examplePost)
-        const expected = { result: null, status: 204 }
-        expect(postCreated).toEqual(expected)
+        expect(postCreated.result).toHaveProperty('content', 'Peru 2 Ecuador 1')
     })
     it('should return an error if we dont pass anny content', async () => {
         await expect(createPost(1, emptyPost)).rejects.toThrowError(Error)

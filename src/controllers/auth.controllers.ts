@@ -6,7 +6,7 @@ export const signup = async (
     res: express.Response
 ): Promise<void> => {
     if (!req.body.email || !req.body.password) {
-        res.status(400).send({ message: 'need email and password' })
+        res.status(400).send({ data: 'need email and password' })
     }
     const user = await userService.signUpUser(req.body)
     if (user) {

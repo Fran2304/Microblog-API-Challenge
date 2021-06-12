@@ -26,7 +26,9 @@ export const updatePost = async (
             req.params.postId,
             req.body
         )
-        res.status(likePost.status).json({ data: likePost.result })
+        console.log('controller', likePost.result)
+
+        res.status(likePost.status).json(likePost.result)
     }
 }
 

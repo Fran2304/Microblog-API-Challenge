@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { commentType, likeJson } from '../../type/types'
+import { commentType, likeJson, resultLike } from '../../type/types'
 import { plainToClass } from 'class-transformer'
 import { CommentDto } from '../../Dtos/commentDto'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
@@ -41,7 +41,7 @@ export const createComment = async (
                 postId: pId,
             },
         })
-        return { result: plainToClass(CommentDto, commentCreated), status: 204 }
+        return { result: plainToClass(CommentDto, commentCreated), status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, e.status ?? 404, e)
     }
@@ -95,7 +95,7 @@ export const updateComment = async (
                 ...params,
             },
         })
-        return { result: plainToClass(CommentDto, commentUpdated), status: 204 }
+        return { result: plainToClass(CommentDto, commentUpdated), status: 200 }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)
@@ -215,19 +215,21 @@ export const ProcessCommentLike = async (
     likeData: likeJson
 ) => {
     try {
+        const cId = fixId(commentId)
         let comment = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
+                id: cId,
             },
         })
         if (comment == null) {
             throw new Error('ERROR: comment does not exist ')
         }
+        let rLike: resultLike = { total: 0 }
         if (likeData.like) {
-            likeComment(authorId, fixId(commentId), comment.likesQuantity)
+            rLike = await likeComment(authorId, cId, comment.likesQuantity)
         } else {
             if (comment.likesQuantity != 0) {
-                dislikeComment(
+                rLike = await dislikeComment(
                     authorId,
                     fixId(commentId),
                     comment.likesQuantity
@@ -235,7 +237,7 @@ export const ProcessCommentLike = async (
             }
         }
 
-        return { result: null, status: 204 }
+        return { result: rLike.total, status: 200 }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)
@@ -254,24 +256,26 @@ const likeComment = async (
                 authorId: authorId,
             },
         })
-
-        if (commentLike == null) {
-            await prisma.comment.update({
-                where: {
-                    id: commentId,
-                },
-                data: {
-                    likesQuantity: quantity + 1,
-                },
-            })
-            await prisma.commentLikes.create({
-                data: {
-                    commentId: commentId,
-                    authorId: authorId,
-                    like: true,
-                },
-            })
+        if (commentLike !== null) {
+            throw new Error('ERROR: cant like a comment that has a like')
         }
+
+        const addLikes = await prisma.comment.update({
+            where: {
+                id: commentId,
+            },
+            data: {
+                likesQuantity: quantity + 1,
+            },
+        })
+        await prisma.commentLikes.create({
+            data: {
+                commentId: commentId,
+                authorId: authorId,
+                like: true,
+            },
+        })
+        return { total: addLikes.likesQuantity }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)
@@ -295,7 +299,7 @@ const dislikeComment = async (
                 'ERROR: cant dislike a comment that was not previously liked for user'
             )
         }
-        await prisma.comment.update({
+        const removeLikes = await prisma.comment.update({
             where: {
                 id: commentId,
             },
@@ -308,6 +312,8 @@ const dislikeComment = async (
                 id: commentLike?.id,
             },
         })
+
+        return { total: removeLikes.likesQuantity }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)

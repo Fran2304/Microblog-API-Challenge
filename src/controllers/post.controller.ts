@@ -6,7 +6,7 @@ export const createPost = async (
     res: express.Response
 ): Promise<void> => {
     const create = await postService.createPost(req.user.id, req.body)
-    res.status(create.status).end()
+    res.status(create.status).json({ data: create.result }).end()
 }
 
 export const updatePost = async (

@@ -12,9 +12,10 @@ Instructions for the server:
 6. run the command > npm run server
 7. Check under the folder Postman, there is a json file of the workspace for the request
 8. Import the workspace in your Postman application
-9. In the workspace, find and send the "User SignUp" request.
-10. You will the response a jwt token. Copy that value.
-11. In Postman application, create an evironment VARIABLE with the name "authtoken". The INITIAL VALUE of this VARIABLE will be the token previously copied.
+9. In the workspace, find "User SignUp" request.
+10. Edit the body request with your email and send.
+11. You will get the response a jwt token. Copy that value.
+12. In Postman/ Insomnia application, create an evironment VARIABLE with the name "authtoken". The INITIAL VALUE of this VARIABLE will be the token previously copied.
 
 Instructions for the test:
 

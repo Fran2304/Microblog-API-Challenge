@@ -174,8 +174,7 @@ const exampleUpdate = {
 describe('update a post', () => {
     it('should update the content of a post', async () => {
         const postUpdated = await updatePost(1, '1', exampleUpdate)
-        const expected = { result: null, status: 204 }
-        expect(postUpdated).toEqual(expected)
+        expect(postUpdated.result).toHaveProperty('content', 'lindo sol')
     })
     it('should return error if the post does not exist', async () => {
         await expect(updatePost(2, '100', exampleUpdate)).rejects.toThrowError(

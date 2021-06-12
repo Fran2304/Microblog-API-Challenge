@@ -58,7 +58,7 @@ export const updatePost = async (
                 'ERROR: cant update post because does not belongs to user'
             )
         }
-        await prisma.post.update({
+        const postUpdated = await prisma.post.update({
             where: {
                 id: pId,
             },
@@ -66,7 +66,8 @@ export const updatePost = async (
                 ...params,
             },
         })
-        return { result: null, status: 204 }
+        
+        return { result: plainToClass(PostDto, postUpdated), status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, 404, e)
     }

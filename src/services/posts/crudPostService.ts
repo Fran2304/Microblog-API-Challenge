@@ -84,6 +84,7 @@ export const deletePost = async (authorId: number, postId: string) => {
         if (postToDelete == null) {
             throw new Error('ERROR: cant delete a post that does not exist')
         }
+        
         postToDelete = await prisma.post.findFirst({
             where: {
                 id: pId,

@@ -13,9 +13,8 @@ export const readUserService = async (id: number) => {
                 id: id,
             },
         })
-        const userDto= new UserUpdateDto();
-        if (readUser?.visibleEmail)
-        userDto.email
+        const userDto = new UserUpdateDto()
+        if (readUser?.visibleEmail) userDto.email
         return { result: plainToClass(UserUpdateDto, userDto), status: 200 }
     } catch (e) {
         throw new ErrorHandler('cant get user', 404, e)

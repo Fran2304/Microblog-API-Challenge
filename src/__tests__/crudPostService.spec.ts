@@ -6,6 +6,8 @@ import {
     createPost,
     updatePost,
     deletePost,
+    readPublishedPosts,
+    readPost,
     ProcessPostLike,
 } from '../services/posts/crudPostService'
 
@@ -154,6 +156,15 @@ describe('create a post', () => {
     })
 })
 
+// Test readPublishedPosts
+
+describe('show all post published', () => {
+    it('should return the number of post pusblished', async () => {
+        const allPost = await readPublishedPosts()
+        expect(allPost.result).toHaveLength(3)
+        expect(allPost.result[0].title).toBe('mi primer postre')
+    })
+})
 // Update post
 
 const exampleUpdate = {
@@ -168,13 +179,11 @@ describe('update a post', () => {
         expect(postUpdated).toEqual(expected)
     })
     it('should return error if the post does not exist', async () => {
-        // const postUpdated = await updatePost('2', '100', exampleUpdate)
         await expect(updatePost(2, '100', exampleUpdate)).rejects.toThrowError(
             ErrorHandler
         )
     })
     it('should return error if the post does not exist', async () => {
-        // const postUpdated = await updatePost('1', '2', exampleUpdate)
         await expect(updatePost(1, '2', exampleUpdate)).rejects.toThrowError(
             ErrorHandler
         )
@@ -183,17 +192,14 @@ describe('update a post', () => {
 
 // Test readPosts
 
-describe('delete a post', () => {
-    it('should return post deleted', async () => {
-        const postToDelete = await deletePost(2, '2')
-        expect(postToDelete.result).toHaveProperty('title', 'manualidades')
-    })
-    it('should return an error if we past a post that does not exist', async () => {
-        await expect(deletePost(2, '100')).rejects.toThrowError(ErrorHandler)
+describe('read a post from a user', () => {
+    it('should return a post from a user', async () => {
+        const post = await readPost('1')
+        expect(post.result).toHaveProperty('title')
     })
 
-    it('should return an error if the post does not belong to user', async () => {
-        await expect(deletePost(1, '1')).rejects.toThrowError(ErrorHandler)
+    it('should return an error if we pass a post id that not exists', async () => {
+        await expect(readPost('100')).rejects.toThrowError(ErrorHandler)
     })
 })
 
@@ -216,7 +222,7 @@ describe('process like', () => {
     // Like
     it('should return 1 if we give a like to a post that does not have any like', async () => {
         const postToLike = await ProcessPostLike(2, '1', jsonLike)
-        expect(postToLike.result).toEqual({ total: 1 })
+        expect(postToLike.result).toEqual(1)
     })
 
     it('should return error if we give a like to a post with like', async () => {
@@ -229,7 +235,7 @@ describe('process like', () => {
     it('should return 0 if we give a dislike to a post that has 1 like', async () => {
         const postToDislike = await ProcessPostLike(1, '2', jsonDislike)
         console.log(postToDislike.result)
-        expect(postToDislike.result).toEqual({ total: 0 })
+        expect(postToDislike.result).toEqual(0)
     })
     it('should return error if we give a dislike a post that was not previously liked for user', async () => {
         await expect(ProcessPostLike(2, '1', jsonLike)).rejects.toThrowError(
@@ -279,4 +285,5 @@ afterAll(async () => {
     const deletePost = prisma.post.deleteMany()
     const deleteUserDetails = prisma.user.deleteMany()
     await prisma.$transaction([deleteUserDetails, deletePost, deleteComment])
+    // await prisma.$disconnect()
 })

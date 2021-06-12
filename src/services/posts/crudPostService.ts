@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { plainToClass } from 'class-transformer'
 import { PostDto } from '../../Dtos/postDto'
-import { likeJson, postType } from '../../type/types'
+import { likeJson, postType, resultLike } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 
@@ -149,19 +149,15 @@ export const ProcessPostLike = async (
         if (post == null) {
             throw new Error('ERROR: the post does not exist')
         }
-        let resultLike
+        let rLike: resultLike = { total: 0 }
         if (likeData.like) {
-            resultLike = await likePost(authorId, pId, post.likesQuantity)
+            rLike = await likePost(authorId, pId, post.likesQuantity)
         } else {
             if (post.likesQuantity != 0) {
-                resultLike = await dislikePost(
-                    authorId,
-                    pId,
-                    post.likesQuantity
-                )
+                rLike = await dislikePost(authorId, pId, post.likesQuantity)
             }
         }
-        return { result: resultLike, status: 204 }
+        return { result: rLike.total, status: 200 }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)
@@ -172,7 +168,7 @@ export const likePost = async (
     authorId: number,
     postId: number,
     quantity: number
-) => {
+): Promise<resultLike> => {
     try {
         const postLike = await prisma.postLikes.findFirst({
             where: {
@@ -184,24 +180,22 @@ export const likePost = async (
             throw new Error('ERROR: cant like a post that has a like')
         }
 
-        if (postLike == null) {
-            const addLikes = await prisma.post.update({
-                where: {
-                    id: postId,
-                },
-                data: {
-                    likesQuantity: quantity + 1,
-                },
-            })
-            await prisma.postLikes.create({
-                data: {
-                    postId: postId,
-                    authorId: authorId,
-                    like: true,
-                },
-            })
-            return { total: addLikes.likesQuantity }
-        }
+        const addLikes = await prisma.post.update({
+            where: {
+                id: postId,
+            },
+            data: {
+                likesQuantity: quantity + 1,
+            },
+        })
+        await prisma.postLikes.create({
+            data: {
+                postId: postId,
+                authorId: authorId,
+                like: true,
+            },
+        })
+        return { total: addLikes.likesQuantity }
     } catch (e) {
         throw new ErrorHandler('ERROR: cant like post', 404, e)
     }
@@ -211,7 +205,7 @@ export const dislikePost = async (
     authorId: number,
     postId: number,
     quantity: number
-) => {
+): Promise<resultLike> => {
     try {
         const postLike = await prisma.postLikes.findFirst({
             where: {

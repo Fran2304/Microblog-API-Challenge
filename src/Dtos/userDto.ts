@@ -14,8 +14,7 @@ export class UserUpdateDto {
     public lastName: string
     public bio: string
 
-    constructor(
-    ) {
+    constructor() {
         this.email = ''
         this.nickname = ''
         this.firstName = ''

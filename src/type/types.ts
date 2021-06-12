@@ -38,3 +38,7 @@ export type tokenPayload = {
 export type User = {
     id: number
 }
+
+export type resultLike = {
+    total: number
+}

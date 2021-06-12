@@ -26,9 +26,7 @@ export const updatePost = async (
             req.params.postId,
             req.body
         )
-        console.log('controller', likePost.result)
-
-        res.status(likePost.status).json(likePost.result)
+        res.status(likePost.status).json({ data: likePost.result })
     }
 }
 
@@ -55,14 +53,6 @@ export async function readPost(
     req: express.Request,
     res: express.Response
 ): Promise<void> {
-    const read = await postService.readPost(req.params.id)
-    res.status(read.status).json({ data: read.result })
-}
-
-export const readPost1 = async (
-    req: express.Request,
-    res: express.Response
-): Promise<void> => {
     const read = await postService.readPost(req.params.id)
     res.status(read.status).json({ data: read.result })
 }

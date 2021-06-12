@@ -1,8 +1,5 @@
 /* eslint-disable no-undef */
-// import * as request from 'supertest'
 import { PrismaClient } from '@prisma/client'
-// import express from 'express'
-// import { app } from '../../server'
 import { ErrorHandler } from './../errorHandler/errorHandler'
 
 import {
@@ -11,7 +8,7 @@ import {
     readPublishedPosts,
     updatePost,
     deletePost,
-    likePost,
+    ProcessPostLike,
 } from '../services/posts/crudPostService'
 
 const prisma = new PrismaClient()
@@ -76,7 +73,7 @@ beforeAll(async () => {
                 createdAt: date,
                 content: 'realizar una almohada',
                 published: true,
-                likesQuantity: 0,
+                likesQuantity: 1,
                 authorId: secondUser?.id ?? 0,
             },
         ],
@@ -126,6 +123,15 @@ beforeAll(async () => {
     })
 
     console.log('✨ 2 comments successfully created!')
+
+    await prisma.postLikes.createMany({
+        data: [
+            {
+                authorId: 1,
+                postId: 2,
+            },
+        ],
+    })
 })
 
 // Test create
@@ -147,6 +153,19 @@ describe('create a post', () => {
     })
     it('should return an error if we dont pass anny content', async () => {
         await expect(createPost(1, emptyPost)).rejects.toThrowError(Error)
+<<<<<<< HEAD
+    })
+})
+
+// Test readPublishedPosts
+
+describe('show all post published', () => {
+    it('should return the number of post pusblished', async () => {
+        const allPost = await readPublishedPosts()
+        expect(allPost.result).toHaveLength(3)
+        expect(allPost.result[0].title).toBe('mi primer postre')
+=======
+>>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
     })
 })
 
@@ -164,14 +183,88 @@ describe('update a post', () => {
         expect(postUpdated).toEqual(expected)
     })
     it('should return error if the post does not exist', async () => {
+<<<<<<< HEAD
+=======
         // const postUpdated = await updatePost('2', '100', exampleUpdate)
+>>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
         await expect(updatePost(2, '100', exampleUpdate)).rejects.toThrowError(
             ErrorHandler
         )
     })
     it('should return error if the post does not exist', async () => {
+<<<<<<< HEAD
+=======
         // const postUpdated = await updatePost('1', '2', exampleUpdate)
+>>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
         await expect(updatePost(1, '2', exampleUpdate)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+})
+
+// Test readPosts
+
+<<<<<<< HEAD
+describe('read a post from a user', () => {
+    it('should return a post from a user', async () => {
+        const post = await readPost('1')
+        expect(post.result).toHaveProperty('title')
+    })
+
+    it('should return an error if we pass a post id that not exists', async () => {
+        await expect(readPost('100')).rejects.toThrowError(ErrorHandler)
+=======
+describe('delete a post', () => {
+    it('should return post deleted', async () => {
+        const postToDelete = await deletePost(2, '2')
+        expect(postToDelete.result).toHaveProperty('title', 'manualidades')
+    })
+    it('should return an error if we past a post that does not exist', async () => {
+        await expect(deletePost(2, '100')).rejects.toThrowError(ErrorHandler)
+    })
+
+    it('should return an error if the post does not belong to user', async () => {
+        await expect(deletePost(1, '1')).rejects.toThrowError(ErrorHandler)
+>>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
+    })
+})
+
+// Test process  like
+
+const jsonLike = {
+    like: true,
+}
+
+const jsonDislike = {
+    like: false,
+}
+describe('process like', () => {
+    it('should return an error if the post does not exist', async () => {
+        await expect(ProcessPostLike(1, '10', jsonLike)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+
+    // Like
+    it('should return 1 if we give a like to a post that does not have any like', async () => {
+        const postToLike = await ProcessPostLike(2, '1', jsonLike)
+        expect(postToLike.result).toEqual({ total: 1 })
+    })
+
+    it('should return error if we give a like to a post with like', async () => {
+        await expect(ProcessPostLike(1, '2', jsonLike)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+
+    // Dislike
+    it('should return 0 if we give a dislike to a post that has 1 like', async () => {
+        const postToDislike = await ProcessPostLike(1, '2', jsonDislike)
+        console.log(postToDislike.result)
+        expect(postToDislike.result).toEqual({ total: 0 })
+    })
+    it('should return error if we give a dislike a post that was not previously liked for user', async () => {
+        await expect(ProcessPostLike(2, '1', jsonLike)).rejects.toThrowError(
             ErrorHandler
         )
     })
@@ -190,41 +283,6 @@ describe('delete a post', () => {
 
     it('should return an error if the post does not belong to user', async () => {
         await expect(deletePost(1, '1')).rejects.toThrowError(ErrorHandler)
-    })
-})
-
-// Test readPublishedPosts
-
-describe('show all post published', () => {
-    it('should return the number of post pusblished', async () => {
-        const allPost = await readPublishedPosts()
-        expect(allPost.result).toHaveLength(2)
-        expect(allPost.result[0].title).toBe('mi primer postre')
-    })
-})
-
-// Test readPosts
-
-describe('read a post from a user', () => {
-    it('should return a post from a user', async () => {
-        const post = await readPost('1')
-        expect(post.result).toHaveProperty('title')
-    })
-
-    it('should return an error if we pass a post id that not exists', async () => {
-        await expect(readPost('100')).rejects.toThrowError(ErrorHandler)
-    })
-})
-
-// Test process  like
-
-// Test increase like
-describe('like post', () => {
-    it('should update the content of a post', async () => {
-        const postliked = await likePost(1, 1, 0)
-        const expected = { result: null, status: 204 }
-        // expect(postliked).toBe(1)
-        expect(postliked).toBe(expected)
     })
 })
 
@@ -253,5 +311,4 @@ afterAll(async () => {
     const deletePost = prisma.post.deleteMany()
     const deleteUserDetails = prisma.user.deleteMany()
     await prisma.$transaction([deleteUserDetails, deletePost, deleteComment])
-    // await prisma.$disconnect()
 })

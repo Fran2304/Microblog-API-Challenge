@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client'
+import { plainToClass } from 'class-transformer'
+import { PostDto } from '../../Dtos/postDto'
 import { likeJson, postType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
@@ -8,15 +10,11 @@ const prisma = new PrismaClient()
 export const createPost = async (authorId: number, params: postType) => {
     try {
         if (!params.title || !params.content) {
-            throw new ErrorHandler(
-                'ERROR: Content, title cant be empty',
-                411,
-                'ERROR: Content, title cant be empty'
-            )
+            throw new Error('ERROR: Content cant be empty')
         }
 
         const today: Date = new Date()
-        await prisma.post.create({
+        const postCreated = await prisma.post.create({
             data: {
                 ...params,
                 createdAt: today,
@@ -25,7 +23,7 @@ export const createPost = async (authorId: number, params: postType) => {
                 authorId: authorId,
             },
         })
-        return { result: null, status: 204 }
+        return { result: plainToClass(PostDto, postCreated), status: 204 }
     } catch (e) {
         throw new ErrorHandler('ERROR: cant create post', 422, e.message)
     }
@@ -151,14 +149,19 @@ export const ProcessPostLike = async (
         if (post == null) {
             throw new Error('ERROR: the post does not exist')
         }
+        let resultLike
         if (likeData.like) {
-            likePost(authorId, pId, post.likesQuantity)
+            resultLike = await likePost(authorId, pId, post.likesQuantity)
         } else {
             if (post.likesQuantity != 0) {
-                dislikePost(authorId, pId, post.likesQuantity)
+                resultLike = await dislikePost(
+                    authorId,
+                    pId,
+                    post.likesQuantity
+                )
             }
         }
-        return { result: null, status: 204 }
+        return { result: resultLike, status: 204 }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)
@@ -177,8 +180,12 @@ export const likePost = async (
                 authorId: authorId,
             },
         })
+        if (postLike !== null) {
+            throw new Error('ERROR: cant like a post that has a like')
+        }
+
         if (postLike == null) {
-            await prisma.post.update({
+            const addLikes = await prisma.post.update({
                 where: {
                     id: postId,
                 },
@@ -193,6 +200,7 @@ export const likePost = async (
                     like: true,
                 },
             })
+            return { total: addLikes.likesQuantity }
         }
     } catch (e) {
         throw new ErrorHandler('ERROR: cant like post', 404, e)
@@ -216,7 +224,7 @@ export const dislikePost = async (
                 'ERROR: cant dislike a post that was not previously liked for user'
             )
         }
-        await prisma.post.update({
+        const removeLikes = await prisma.post.update({
             where: {
                 id: postId,
             },
@@ -229,6 +237,8 @@ export const dislikePost = async (
                 id: postLike?.id,
             },
         })
+
+        return { total: removeLikes.likesQuantity }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)

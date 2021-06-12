@@ -14,7 +14,8 @@
         "test:watch": "jest --watchAll",
         "database": "npx prisma generate",
         "prisma:migrate:run": "npx prisma migrate deploy",
-        "prisma:migrate:test": "npx dotenv -e .env.test -- npx prisma migrate dev"
+        "prisma:migrate:test": "npx dotenv -e .env.test -- npx prisma migrate dev",
+        "prisma:generate": "prisma generate"
     },
     "author": "Nerdery2021",
     "license": "ISC",

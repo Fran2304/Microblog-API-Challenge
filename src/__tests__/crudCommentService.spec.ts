@@ -140,7 +140,7 @@ beforeAll(async () => {
 
 // Test create a comment
 const exampleComment = {
-    content: 'Peru 2 Ecuador 1',
+    content: 'El mejor comentario',
 }
 const emptyComment = {
     content: '',
@@ -159,8 +159,10 @@ describe('create a comment', () => {
     })
     it('should create a comment', async () => {
         const postCreated = await createComment(1, '1', exampleComment)
-        const expected = { result: null, status: 204 }
-        expect(postCreated).toEqual(expected)
+        expect(postCreated.result).toHaveProperty(
+            'content',
+            'El mejor comentario'
+        )
     })
 })
 
@@ -173,8 +175,7 @@ const exampleUpdate = {
 describe('update a comment', () => {
     it('should update a comment', async () => {
         const postCreated = await updateComment(1, '1', '1', exampleUpdate)
-        const expected = { result: null, status: 204 }
-        expect(postCreated).toEqual(expected)
+        expect(postCreated.result).toHaveProperty('content', 'i purple you')
     })
     it('should return an error if the comment does not exist', async () => {
         await expect(

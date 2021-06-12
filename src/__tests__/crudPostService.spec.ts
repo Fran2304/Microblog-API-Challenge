@@ -153,7 +153,6 @@ describe('create a post', () => {
     })
     it('should return an error if we dont pass anny content', async () => {
         await expect(createPost(1, emptyPost)).rejects.toThrowError(Error)
-<<<<<<< HEAD
     })
 })
 
@@ -164,11 +163,8 @@ describe('show all post published', () => {
         const allPost = await readPublishedPosts()
         expect(allPost.result).toHaveLength(3)
         expect(allPost.result[0].title).toBe('mi primer postre')
-=======
->>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
     })
 })
-
 // Update post
 
 const exampleUpdate = {
@@ -183,19 +179,11 @@ describe('update a post', () => {
         expect(postUpdated).toEqual(expected)
     })
     it('should return error if the post does not exist', async () => {
-<<<<<<< HEAD
-=======
-        // const postUpdated = await updatePost('2', '100', exampleUpdate)
->>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
         await expect(updatePost(2, '100', exampleUpdate)).rejects.toThrowError(
             ErrorHandler
         )
     })
     it('should return error if the post does not exist', async () => {
-<<<<<<< HEAD
-=======
-        // const postUpdated = await updatePost('1', '2', exampleUpdate)
->>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
         await expect(updatePost(1, '2', exampleUpdate)).rejects.toThrowError(
             ErrorHandler
         )
@@ -204,7 +192,6 @@ describe('update a post', () => {
 
 // Test readPosts
 
-<<<<<<< HEAD
 describe('read a post from a user', () => {
     it('should return a post from a user', async () => {
         const post = await readPost('1')
@@ -213,19 +200,6 @@ describe('read a post from a user', () => {
 
     it('should return an error if we pass a post id that not exists', async () => {
         await expect(readPost('100')).rejects.toThrowError(ErrorHandler)
-=======
-describe('delete a post', () => {
-    it('should return post deleted', async () => {
-        const postToDelete = await deletePost(2, '2')
-        expect(postToDelete.result).toHaveProperty('title', 'manualidades')
-    })
-    it('should return an error if we past a post that does not exist', async () => {
-        await expect(deletePost(2, '100')).rejects.toThrowError(ErrorHandler)
-    })
-
-    it('should return an error if the post does not belong to user', async () => {
-        await expect(deletePost(1, '1')).rejects.toThrowError(ErrorHandler)
->>>>>>> 3832bce33fe8ff3e5d7bf2462bd98d294e161304
     })
 })
 
@@ -311,4 +285,5 @@ afterAll(async () => {
     const deletePost = prisma.post.deleteMany()
     const deleteUserDetails = prisma.user.deleteMany()
     await prisma.$transaction([deleteUserDetails, deletePost, deleteComment])
+    // await prisma.$disconnect()
 })

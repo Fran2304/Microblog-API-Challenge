@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { PrismaClient } from '@prisma/client'
-import { confirmationType, userType } from '../../type/types'
+import { confirmationType, tokenPayload, userType } from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { plainToClass } from 'class-transformer'
 import { UserDto } from '../../Dtos/userDto'
@@ -8,8 +8,7 @@ import { generateHash } from '../../Helpers/createHashHelper'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { sendMailOfConfirmationCode } from '../../Helpers/emailSender'
-import { fixId } from '../../Helpers/dataHelper'
-import { reject } from 'lodash'
+import { isNumber, reject } from 'lodash'
 
 const prisma = new PrismaClient()
 
@@ -40,7 +39,11 @@ export const verifyToken = (token: string) =>
         jwt.verify(token, process.env.JWT_SECRET as string, (err, payload) => {
             if (err) {
                 reject(err)
-                throw new Error('ERROR: Cant verify token')
+                throw new ErrorHandler(
+                    'ERROR: Cant verify token',
+                    403,
+                    'ERROR: Cant verify token'
+                )
             }
             resolve(payload)
         })
@@ -121,24 +124,33 @@ export const signInUser = async (params: userType) => {
 
 export const signOutUser = async (token: string) => {
     try {
-        const payload = await verifyToken(token)
-        console.log(payload)
-        const id = fixId(token)
+        const payload = (await verifyToken(token)) as tokenPayload
+        if (!isNumber(payload.id)) {
+            throw new Error('ERROR: invalid user id')
+        }
         const readUser = await prisma.user.findUnique({
             where: {
-                id: id,
+                id: payload.id,
             },
         })
         if (readUser == null) {
             throw new Error('ERROR: invalid user id')
         }
-        return { result: token, status: 200 }
+        await prisma.user.update({
+            where: {
+                id: readUser.id,
+            },
+            data: {
+                active: false,
+            },
+        })
+        return { result: true, status: 200 }
     } catch (e) {
-        throw new ErrorHandler(e.message, 401, e)
+        throw new ErrorHandler(e.message, e.status ?? 401, e)
     }
 }
 
-export const VerifyCode = async (codeSent: confirmationType) => {
+export const verifyCode = async (codeSent: confirmationType) => {
     try {
         if (!codeSent.confirmationCode) {
             throw new Error('confirmation code cant be empty')
@@ -163,6 +175,30 @@ export const VerifyCode = async (codeSent: confirmationType) => {
             },
         })
         return { result: true, status: 200 }
+    } catch (e) {
+        throw new ErrorHandler(e.message, 401, e)
+    }
+}
+
+export const protect = async (token: string) => {
+    try {
+        if (!token) {
+            throw new Error('ERROR: token cant be empty')
+        }
+        const payload = (await verifyToken(token)) as tokenPayload
+
+        if (!isNumber(payload.id)) {
+            throw new Error('ERROR: invalid user id')
+        }
+        const user = await prisma.user.findUnique({
+            where: {
+                id: payload.id,
+            },
+        })
+        if (user == null) {
+            throw new Error('ERROR: invalid user id')
+        }
+        return { result: user.id, status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, 401, e)
     }

@@ -31,6 +31,10 @@ export type confirmationType = {
 
 export type tokenPayload = {
     id: number
-    iat: Date
-    exp: Date
+    iat: number
+    exp: number
+}
+
+export type User = {
+    id: number
 }

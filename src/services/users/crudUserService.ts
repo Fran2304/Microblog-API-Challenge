@@ -31,11 +31,11 @@ export const readUserService = async (params: userType) => {
     }
 }
 
-export const updateUserService = async (id: string, params: userType) => {
+export const updateUserService = async (id: number, params: userType) => {
     try {
         await prisma.user.update({
             where: {
-                id: fixId(id),
+                id: id,
             },
             data: {
                 ...params,
@@ -43,7 +43,7 @@ export const updateUserService = async (id: string, params: userType) => {
         })
         return { result: null, status: 204 }
     } catch (e) {
-        throw new ErrorHandler('cant update comment', 404, e)
+        throw new ErrorHandler('cant update user', 404, e)
     }
 }
 
@@ -81,8 +81,3 @@ export const showNameUserService = async (id: string, visibleName: boolean) => {
         throw new ErrorHandler('cant update comment', 404, e.message)
     }
 }
-
-// export const getAllUsers = async () => {
-//     const users = await prisma.user.findMany({})
-//     return { result: users, status: 200 }
-// }

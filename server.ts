@@ -8,6 +8,7 @@ import postsRouter from './src/routes/posts.router'
 import commentsUserRouter from './src/routes/commentUsers.router'
 import commentsRouter from './src/routes/comments.router'
 import {
+    protect,
     signin,
     signup,
     signout,
@@ -37,15 +38,13 @@ app.post('/signin', asyncHandler(signin))
 app.post('/signout', asyncHandler(signout))
 app.patch('/emailconfirmation', asyncHandler(verifyConfirmationCode))
 
-//app.use('/api', protect)
+app.use('/api/accounts', asyncHandler(protect))
 app.use('/api/accounts', usersRouter)
-
 app.use('/api/accounts/:id/posts', postsUserRouter)
-app.use('/api/posts', postsRouter)
-
 app.use('/api/accounts/:id/posts/:postId/comments', commentsUserRouter)
+
+app.use('/api/posts', postsRouter)
 app.use('/api/posts/:id/comments', commentsRouter)
-console.log(app.routes)
 
 function errorManager(
     err: ErrorHandler,

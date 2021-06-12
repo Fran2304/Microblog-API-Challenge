@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { commentType, likeJson } from '../../type/types'
+import { plainToClass } from 'class-transformer'
+import { CommentDto } from '../../Dtos/commentDto'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { fixId } from '../../Helpers/dataHelper'
 
@@ -11,6 +13,8 @@ export const createComment = async (
     params: commentType
 ) => {
     try {
+        const pId = fixId(postId)
+
         if (!params.content) {
             throw new ErrorHandler(
                 'Content cant be empty',
@@ -20,24 +24,24 @@ export const createComment = async (
         }
         const post = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
         })
         if (post == null) {
             throw new Error('ERROR: the post that does not exist')
         }
         const today: Date = new Date()
-        await prisma.comment.create({
+        const commentCreated = await prisma.comment.create({
             data: {
                 ...params,
                 createdAt: today,
                 published: params.published != null ? params.published : true,
                 likesQuantity: 0,
                 authorId: authorId,
-                postId: fixId(postId),
+                postId: pId,
             },
         })
-        return { result: null, status: 204 }
+        return { result: plainToClass(CommentDto, commentCreated), status: 204 }
     } catch (e) {
         throw new ErrorHandler(e.message, e.status ?? 404, e)
     }
@@ -50,9 +54,12 @@ export const updateComment = async (
     params: commentType
 ) => {
     try {
+        const cId = fixId(commentId)
+        const pId = fixId(postId)
+
         let commentToUpdate = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
+                id: cId,
             },
         })
         if (commentToUpdate == null) {
@@ -60,8 +67,8 @@ export const updateComment = async (
         }
         commentToUpdate = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
-                postId: fixId(postId),
+                id: cId,
+                postId: pId,
             },
         })
         if (commentToUpdate == null) {
@@ -72,23 +79,23 @@ export const updateComment = async (
 
         commentToUpdate = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
-                postId: fixId(postId),
+                id: cId,
+                postId: pId,
                 authorId: authorId,
             },
         })
         if (commentToUpdate == null) {
             throw new Error('cant update comment that does not belongs to user')
         }
-        await prisma.comment.update({
+        let commentUpdated = await prisma.comment.update({
             where: {
-                id: fixId(commentId),
+                id: cId,
             },
             data: {
                 ...params,
             },
         })
-        return { result: null, status: 204 }
+        return { result: plainToClass(CommentDto, commentUpdated), status: 204 }
     } catch (e) {
         console.log(e.message)
         throw new ErrorHandler(e.message, 404, e)
@@ -101,9 +108,12 @@ export const deleteComment = async (
     commentId: string
 ) => {
     try {
+        const cId = fixId(commentId)
+        const pId = fixId(postId)
+
         let commentToDelete = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
+                id: cId,
             },
         })
         if (commentToDelete == null) {
@@ -111,8 +121,8 @@ export const deleteComment = async (
         }
         commentToDelete = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
-                postId: fixId(postId),
+                id: cId,
+                postId: pId,
             },
         })
         if (commentToDelete == null) {
@@ -122,8 +132,8 @@ export const deleteComment = async (
         }
         commentToDelete = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
-                postId: fixId(postId),
+                id: cId,
+                postId: pId,
                 authorId: authorid,
             },
         })
@@ -134,7 +144,7 @@ export const deleteComment = async (
         }
         await prisma.comment.delete({
             where: {
-                id: fixId(commentId),
+                id: cId,
             },
         })
         return { result: commentToDelete, status: 200 }
@@ -146,9 +156,11 @@ export const deleteComment = async (
 
 export const readPublishedComments = async (postId: string) => {
     try {
+        const pId = fixId(postId)
+
         let post = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
         })
         if (post == null) {
@@ -157,7 +169,7 @@ export const readPublishedComments = async (postId: string) => {
         const comments = await prisma.comment.findMany({
             where: {
                 published: true,
-                postId: fixId(postId),
+                postId: pId,
             },
         })
         if (comments.length == 0) {
@@ -171,9 +183,12 @@ export const readPublishedComments = async (postId: string) => {
 
 export const readComment = async (postId: string, commentId: string) => {
     try {
+        const cId = fixId(commentId)
+        const pId = fixId(postId)
+
         let comment = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
+                id: cId,
             },
         })
         if (comment == null) {
@@ -181,8 +196,8 @@ export const readComment = async (postId: string, commentId: string) => {
         }
         comment = await prisma.comment.findFirst({
             where: {
-                id: fixId(commentId),
-                postId: fixId(postId),
+                id: cId,
+                postId: pId,
             },
         })
         if (comment == null) {

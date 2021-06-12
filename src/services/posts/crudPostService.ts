@@ -74,9 +74,10 @@ export const updatePost = async (
 
 export const deletePost = async (authorId: number, postId: string) => {
     try {
+        const pId = fixId(postId)
         let postToDelete = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
         })
         if (postToDelete == null) {
@@ -84,7 +85,7 @@ export const deletePost = async (authorId: number, postId: string) => {
         }
         postToDelete = await prisma.post.findFirst({
             where: {
-                id: fixId(postId),
+                id: pId,
                 authorId: authorId,
             },
         })
@@ -95,7 +96,7 @@ export const deletePost = async (authorId: number, postId: string) => {
         }
         await prisma.post.delete({
             where: {
-                id: fixId(postId),
+                id: pId,
             },
         })
         return { result: postToDelete, status: 200 }
@@ -119,9 +120,10 @@ export const readPublishedPosts = async () => {
 
 export const readPost = async (id: string) => {
     try {
+        const pId = fixId(id)
         const post = await prisma.post.findFirst({
             where: {
-                id: fixId(id),
+                id: pId,
             },
         })
         if (post == null) {

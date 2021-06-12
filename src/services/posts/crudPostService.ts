@@ -23,7 +23,7 @@ export const createPost = async (authorId: number, params: postType) => {
                 authorId: authorId,
             },
         })
-        return { result: plainToClass(PostDto, postCreated), status: 204 }
+        return { result: plainToClass(PostDto, postCreated), status: 200 }
     } catch (e) {
         throw new ErrorHandler('ERROR: cant create post', 422, e.message)
     }
@@ -82,6 +82,7 @@ export const deletePost = async (authorId: number, postId: string) => {
         if (postToDelete == null) {
             throw new Error('ERROR: cant delete a post that does not exist')
         }
+        
         postToDelete = await prisma.post.findFirst({
             where: {
                 id: fixId(postId),

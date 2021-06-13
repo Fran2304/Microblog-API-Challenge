@@ -1,9 +1,12 @@
 /* eslint-disable no-undef */
 
 import { PrismaClient } from '@prisma/client'
-import { ErrorHandler } from './../errorHandler/errorHandler'
+import { ErrorHandler } from '../errorHandler/errorHandler'
 
-import { readUserService } from './../services/users/crudUserService'
+import {
+    readUserService,
+    updateUserService,
+} from './../services/users/crudUserService'
 
 const prisma = new PrismaClient()
 
@@ -13,9 +16,9 @@ beforeAll(async () => {
             {
                 email: 'flor@mundo.com',
                 nickname: 'mariposa',
-                firstName: 'ana',
+                firstName: 'Ana',
                 lastName: 'Zevallos',
-                visibleEmail: false,
+                visibleEmail: true,
                 visibleName: true,
                 password: 'contrasena123',
                 emailVerified: true,
@@ -28,7 +31,7 @@ beforeAll(async () => {
                 firstName: 'rocio',
                 lastName: 'Sanqui',
                 visibleEmail: false,
-                visibleName: true,
+                visibleName: false,
                 password: 'contrasena456',
                 emailVerified: false,
                 bio: 'me gustan los chocolates',
@@ -36,37 +39,77 @@ beforeAll(async () => {
             },
         ],
     })
+    console.log('users created')
 })
-
-// const userRegistered = {
-//     email: 'rocio@mundo.com',
-//     nickname: 'corazon',
-//     firstName: 'rocio',
-//     lastName: 'Sanqui',
-//     password: 'contrasena456',
-//     hashActivation: '222222222',
-//     visibleEmail: true,
-//     visibleName: true,
-// }
-
-// const newUser = {
-//     email: 'spiderman@gmail.com',
-//     nickname: 'parker',
-//     firstName: 'Micaela',
-//     lastName: 'Rojas',
-//     password: '12345',
-//     visibleEmail: true,
-//     visibleName: true,
-//     hashActivation: '222222222',
-// }
 
 describe('read a user', () => {
     it('should get a user', async () => {
         const postCreated = await readUserService(1)
-        expect(postCreated.result).toHaveProperty('content', 'Peru 2 Ecuador 1')
+        expect(postCreated.result).toHaveProperty('nickname', 'mariposa')
     })
     it('should return an error if the user does not exist', async () => {
-        await expect(readUserService(5)).rejects.toThrowError(ErrorHandler)
+        await expect(readUserService(100)).rejects.toThrowError(ErrorHandler)
+    })
+    it('should show the email if it is visible', async () => {
+        const postCreated = await readUserService(1)
+        expect(postCreated.result).toHaveProperty('email', 'flor@mundo.com')
+    })
+    it('should not return the email if it is not visible', async () => {
+        const postCreated = await readUserService(2)
+        expect(postCreated.result).toHaveProperty('email', '')
+    })
+    it('should show the name and lastname if it is visible', async () => {
+        const postCreated = await readUserService(1)
+        expect(postCreated.result).toHaveProperty('firstName', 'Ana')
+        expect(postCreated.result).toHaveProperty('lastName', 'Zevallos')
+    })
+
+    it('should not return firstName and lastName if it is not visible', async () => {
+        const postCreated = await readUserService(2)
+        expect(postCreated.result).toHaveProperty('firstName', '')
+        expect(postCreated.result).toHaveProperty('lastName', '')
+    })
+})
+
+const nothingToUpdate = {
+    firstName: '',
+    lastName: '',
+    nickname: '',
+    bio: '',
+}
+
+const infoToUpdate = {
+    firstName: 'Maria',
+    lastName: 'arteaga',
+    visibleEmail: true,
+    visibleName: true,
+    nickname: 'sylormoon',
+    bio: 'que felicidad',
+}
+
+const nicknameRepeated = {
+    nickname: 'la',
+}
+
+describe('update user', () => {
+    it('should return an error if the user does not exist', async () => {
+        await expect(updateUserService(100, infoToUpdate)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+    it('should return an error if we dont pass anything to update', async () => {
+        await expect(
+            updateUserService(1, nothingToUpdate)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+    it('should return an error if the user does not exist', async () => {
+        await expect(
+            updateUserService(2, nicknameRepeated)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+    it('should update fields of the user', async () => {
+        const updated = await updateUserService(1, infoToUpdate)
+        expect(updated.result).toHaveProperty('firstName', 'Maria')
     })
 })
 

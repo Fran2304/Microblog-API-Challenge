@@ -22,12 +22,12 @@ export type userType = {
 }
 
 export type updateUserType = {
-    nickname: string
-    firstName: string
-    lastName: string
+    nickname?: string
+    firstName?: string
+    lastName?: string
     bio?: string
-    visibleEmail: boolean
-    visibleName: boolean
+    visibleEmail?: boolean
+    visibleName?: boolean
 }
 
 export type likeJson = {

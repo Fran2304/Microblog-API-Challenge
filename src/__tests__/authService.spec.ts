@@ -38,7 +38,7 @@ describe('generate token', () => {
 
 describe('verify token', () => {
     const userToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAsImlhdCI6MTYyMzU1OTUxNywiZXhwIjoxNjI0NDIzNTE3fQ.F0YItXJJ6Q0kZy22a2z4P-EYv4F407DwU_S7-dwQVzQ'
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNjAyMjczLCJleHAiOjE2MzIyNDIyNzN9.6MZ3AsKlbSoqk8_FC9PdZ26cvelvfTserdHyGZD3sSE'
     it('should verify a token', async () => {
         const payload = await verifyToken(userToken)
         expect(payload).toHaveProperty('id')
@@ -112,7 +112,7 @@ describe('sign in user', () => {
         password: 'hola',
     }
 
-    it('should generate a token', async () => {
+    it('should sign in the user and receive a token', async () => {
         const userLogged = await signInUser(user)
         console.log(userLogged)
         expect(typeof userLogged.result).toBe('string')
@@ -161,7 +161,7 @@ describe('protect', () => {
     })
 
     const userToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNjAyMjczLCJleHAiOjE2MzIyNDIyNzN9.6MZ3AsKlbSoqk8_FC9PdZ26cvelvfTserdHyGZD3sSE'
     it('should allow login', async () => {
         const protectUser = await protect(userToken)
         expect(protectUser.result).toBe(1)
@@ -170,7 +170,7 @@ describe('protect', () => {
 
 describe('sign out user', () => {
     const userToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNjAyMjczLCJleHAiOjE2MzIyNDIyNzN9.6MZ3AsKlbSoqk8_FC9PdZ26cvelvfTserdHyGZD3sSE'
     it('should log out a user', async () => {
         const singout = await signOutUser(userToken)
         expect(singout.result).toEqual(true)

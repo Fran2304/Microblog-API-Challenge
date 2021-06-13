@@ -179,7 +179,10 @@ export const readPublishedComments = async (postId: string) => {
             },
         })
         if (comments.length == 0) {
-            return { result: null, status: 404 }
+            return {
+                result: 'There are no published comments yet',
+                status: 201,
+            }
         }
         return { result: comments, status: 200 }
     } catch (e) {

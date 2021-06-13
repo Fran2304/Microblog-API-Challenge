@@ -199,7 +199,7 @@ describe('read all published comments', () => {
     })
     it('should return null if we pass a post without comments', async () => {
         const comments = await readPublishedComments('3')
-        await expect(comments.result).toBe(null)
+        expect(comments.result).toEqual('There are no published comments yet')
     })
     it('should return error if we pass a post id that not exists', async () => {
         await expect(readPublishedComments('100')).rejects.toThrowError(

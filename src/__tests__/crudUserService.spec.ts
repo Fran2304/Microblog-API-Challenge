@@ -88,7 +88,7 @@ const infoToUpdate = {
 }
 
 const nicknameRepeated = {
-    nickname: 'la',
+    nickname: 'mariposa',
 }
 
 describe('update user', () => {
@@ -102,9 +102,9 @@ describe('update user', () => {
             updateUserService(1, nothingToUpdate)
         ).rejects.toThrowError(ErrorHandler)
     })
-    it('should return an error if the user does not exist', async () => {
+    it('should return an error if we pass a repeated nickname', async () => {
         await expect(
-            updateUserService(2, nicknameRepeated)
+            updateUserService(1, nicknameRepeated)
         ).rejects.toThrowError(ErrorHandler)
     })
     it('should update fields of the user', async () => {

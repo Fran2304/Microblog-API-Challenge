@@ -45,7 +45,7 @@ export const updateUserService = async (id: number, params: updateUserType) => {
             !params.lastName &&
             !params.visibleEmail &&
             !params.visibleName &&
-            !params.visibleEmail &&
+            !params.nickname &&
             !params.bio
         ) {
             throw new Error('ERROR: Cant update empty fields')

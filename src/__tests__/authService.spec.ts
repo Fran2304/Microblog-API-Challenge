@@ -7,10 +7,11 @@ import {
     generatePassword,
     newToken,
     signUpUser,
+    signInUser,
     verifyToken,
 } from '../services/auth/authService'
 import { JsonWebTokenError } from 'jsonwebtoken'
-import { userType } from '../type/types'
+import { userType, userTypeLogin } from '../type/types'
 
 const prisma = new PrismaClient()
 
@@ -100,6 +101,51 @@ describe('sign up user', () => {
     })
     it('should throw an error if there is a user registered', async () => {
         await expect(signUpUser(user)).rejects.toThrowError(ErrorHandler)
+    })
+})
+
+// Test sign in
+describe('sign in user', () => {
+    const user: userTypeLogin = {
+        email: 'flor002@mundo.com',
+        password: 'hola',
+    }
+
+    it('should generate a token', async () => {
+        const userLogged = await signInUser(user)
+        console.log(userLogged)
+        expect(typeof userLogged.result).toBe('string')
+    })
+
+    // Error 1
+
+    const userNoInfo: userTypeLogin = {
+        email: '',
+        password: '',
+    }
+    it('should throw an error if there are not email nor password', async () => {
+        await expect(signInUser(userNoInfo)).rejects.toThrowError(ErrorHandler)
+    })
+
+    const userWrongEmail: userTypeLogin = {
+        email: 'flor11111@mundo.com',
+        password: 'hola',
+    }
+    it('should throw an error if the email is wrong', async () => {
+        await expect(signInUser(userWrongEmail)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+
+    const userWrongPassword: userTypeLogin = {
+        email: 'flor002@mundo.com',
+        password: 'chau',
+    }
+
+    it('should throw an error if the password is wrong', async () => {
+        await expect(signInUser(userWrongPassword)).rejects.toThrowError(
+            ErrorHandler
+        )
     })
 })
 

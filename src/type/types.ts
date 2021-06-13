@@ -51,3 +51,8 @@ export type User = {
 export type resultLike = {
     total: number
 }
+
+export type userTypeLogin = {
+    email: string
+    password: string
+}

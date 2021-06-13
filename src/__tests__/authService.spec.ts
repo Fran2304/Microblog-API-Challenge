@@ -6,25 +6,13 @@ import {
     checkPassword,
     generatePassword,
     newToken,
+    signUpUser,
     verifyToken,
 } from '../services/auth/authService'
 import { JsonWebTokenError } from 'jsonwebtoken'
+import { userType } from '../type/types'
 
 const prisma = new PrismaClient()
-
-// eslint-disable-next-line no-unused-vars
-const userToSignIn = {
-    email: 'flor@mundo.com',
-    nickname: 'mariposa',
-    firstName: 'ana',
-    lastName: 'Zevallos',
-    visibleEmail: false,
-    visibleName: true,
-    password: 'contrasena123',
-    emailVerified: true,
-    bio: 'estoy feliz de la vida',
-    hashActivation: 'caracteresaleatorios1',
-}
 
 describe('generate password', () => {
     const pass = 'contrasena123'
@@ -47,18 +35,18 @@ describe('generate token', () => {
 
 describe('verify token', () => {
     const userToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImlhdCI6MTYyMzUzMjY1NywiZXhwIjoxNjIzNTUwNjU3fQ.WrfweFNOxalB7eHbAiMIvkCuSSfyX6l1W1Z5qfjqqOc'
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAsImlhdCI6MTYyMzU1OTUxNywiZXhwIjoxNjI0NDIzNTE3fQ.F0YItXJJ6Q0kZy22a2z4P-EYv4F407DwU_S7-dwQVzQ'
     it('should verify a token', async () => {
-        const payload = verifyToken(userToken)
+        const payload = await verifyToken(userToken)
         expect(payload).toHaveProperty('id')
     })
     it('should throw an error if token is empty', async () => {
-        const payload = verifyToken('')
-        expect(payload).rejects.toThrow(JsonWebTokenError)
+        await expect(verifyToken('')).rejects.toThrow(JsonWebTokenError)
     })
     it('should throw an error if token is modified', async () => {
-        const payload = verifyToken(userToken.substring(0, 1))
-        expect(payload).rejects.toThrow(JsonWebTokenError)
+        await expect(verifyToken(userToken.substring(0, 1))).rejects.toThrow(
+            JsonWebTokenError
+        )
     })
 })
 
@@ -70,11 +58,48 @@ describe('check password', () => {
     it('should return true if passwords match', async () => {
         expect(await checkPassword(passwordInDB, plainPassword)).toEqual(true)
     })
-    it('should throw an error if given password is empty', async () => {
+    it('should return false if given password is empty', async () => {
         expect(await checkPassword(passwordInDB, '')).toEqual(false)
     })
-    it('should throw an error if given password is incorrect', async () => {
+    it('should return false if given password is incorrect', async () => {
         expect(await checkPassword(passwordInDB, 'contrasena')).toEqual(false)
+    })
+})
+
+describe('sign up user', () => {
+    const user: userType = {
+        email: 'flor002@mundo.com',
+        nickname: 'flor002',
+        firstName: 'flor',
+        lastName: 'Zevallos',
+        password: 'hola',
+        bio: 'estoy feliz de la vida',
+        hashActivation: '',
+        visibleEmail: true,
+        visibleName: false,
+    }
+
+    it('should create a user', async () => {
+        expect(await signUpUser(user)).toHaveProperty('code')
+    })
+    const userNoPassword: userType = {
+        email: 'flor002@mundo.com',
+        nickname: 'flor002',
+        firstName: 'flor',
+        lastName: 'Zevallos',
+        password: '',
+        bio: 'estoy feliz de la vida',
+        hashActivation: '',
+        visibleEmail: true,
+        visibleName: false,
+    }
+    it('should throw an error if a required field is empty', async () => {
+        await expect(signUpUser(userNoPassword)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+    it('should throw an error if there is a user registered', async () => {
+        await expect(signUpUser(user)).rejects.toThrowError(ErrorHandler)
     })
 })
 

@@ -1,4 +1,5 @@
 import express, { NextFunction } from 'express'
+import { sendMailOfConfirmationCode } from '../Helpers/emailSender'
 import * as userService from '../services/auth/authService'
 
 export const signup = async (
@@ -9,13 +10,20 @@ export const signup = async (
         res.status(400).send({ data: 'need email and password' })
     }
     const user = await userService.signUpUser(req.body)
-    if (user) {
-        const token = userService.newToken(user.result.id)
 
-        res.status(user.status).json({
-            data: 'Complete registration',
-            token: token,
-        })
+    if (user) {
+        const isSent = sendMailOfConfirmationCode(user.result.email, user.code)
+        if (isSent) {
+            const token = userService.newToken(user.result.id)
+            res.status(user.status).json({
+                data: 'Complete registration',
+                token: token,
+            })
+        } else {
+            res.status(user.status).json({
+                data: 'Complete registration, but email cant be sent',
+            })
+        }
     }
 }
 

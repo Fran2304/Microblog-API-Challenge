@@ -6,6 +6,7 @@ import {
     checkPassword,
     generatePassword,
     newToken,
+    signOutUser,
     signUpUser,
     verifyToken,
 } from '../services/auth/authService'
@@ -80,7 +81,8 @@ describe('sign up user', () => {
     }
 
     it('should create a user', async () => {
-        expect(await signUpUser(user)).toHaveProperty('code')
+        const signUp = await signUpUser(user)
+        expect(signUp).toHaveProperty('code')
     })
     const userNoPassword: userType = {
         email: 'flor002@mundo.com',
@@ -100,6 +102,21 @@ describe('sign up user', () => {
     })
     it('should throw an error if there is a user registered', async () => {
         await expect(signUpUser(user)).rejects.toThrowError(ErrorHandler)
+    })
+})
+
+describe('sign out user', () => {
+    const userToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+
+    it('should log out a user', async () => {
+        const singout = await signOutUser(userToken)
+        expect(singout.result).toEqual(true)
+    })
+    it('should throw an error if the token is corrupted', async () => {
+        await expect(
+            signOutUser(userToken.substring(0, 4))
+        ).rejects.toThrowError(ErrorHandler)
     })
 })
 

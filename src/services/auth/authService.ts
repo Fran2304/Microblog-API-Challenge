@@ -7,7 +7,6 @@ import { UserDto } from '../../Dtos/userDto'
 import { generateHash } from '../../Helpers/createHashHelper'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { isNumber, reject } from 'lodash'
 
 const prisma = new PrismaClient()
 
@@ -21,7 +20,7 @@ export const generatePassword = async (
             'ERROR: password is empty'
         )
     }
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         bcrypt.hash(plainTextPassword, 8, (err, hash) => {
             if (err) {
                 reject(err)
@@ -157,9 +156,6 @@ export const signInUser = async (params: userType) => {
 export const signOutUser = async (token: string) => {
     try {
         const payload = (await verifyToken(token)) as tokenPayload
-        if (!isNumber(payload.id)) {
-            throw new Error('ERROR: invalid user id')
-        }
         const readUser = await prisma.user.findUnique({
             where: {
                 id: payload.id,

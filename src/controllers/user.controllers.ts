@@ -9,7 +9,7 @@ export const updateUser = async (
         req.user.id,
         req.body
     )
-    res.status(updatedUser.status).json({ data: updatedUser.result })
+    res.status(updatedUser.status).json({ data: 'User updated' })
 }
 
 export const readUser = async (

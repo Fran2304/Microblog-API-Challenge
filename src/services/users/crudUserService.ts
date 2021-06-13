@@ -37,6 +37,19 @@ export const readUserService = async (id: number) => {
 
 export const updateUserService = async (id: number, params: updateUserType) => {
     try {
+        if (!id) {
+            throw new Error('ERROR: user does not exist')
+        }
+        if (
+            !params.firstName &&
+            !params.lastName &&
+            !params.visibleEmail &&
+            !params.visibleName &&
+            !params.nickname &&
+            !params.bio
+        ) {
+            throw new Error('ERROR: Cant update empty fields')
+        }
         if (params.nickname) {
             const readUser = await prisma.user.findUnique({
                 where: {
@@ -49,7 +62,7 @@ export const updateUserService = async (id: number, params: updateUserType) => {
                 )
             }
         }
-        await prisma.user.update({
+        const userUpdated = await prisma.user.update({
             where: {
                 id: id,
             },
@@ -57,7 +70,7 @@ export const updateUserService = async (id: number, params: updateUserType) => {
                 ...params,
             },
         })
-        return { result: null, status: 204 }
+        return { result: userUpdated, status: 200 }
     } catch (e) {
         throw new ErrorHandler(e.message, 404, e)
     }

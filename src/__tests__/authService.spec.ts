@@ -6,12 +6,13 @@ import {
     checkPassword,
     generatePassword,
     newToken,
-    signOutUser,
     signUpUser,
+    signOutUser,
+    signInUser,
     verifyToken,
 } from '../services/auth/authService'
 import { JsonWebTokenError } from 'jsonwebtoken'
-import { userType } from '../type/types'
+import { userType, userTypeLogin } from '../type/types'
 
 const prisma = new PrismaClient()
 
@@ -81,8 +82,7 @@ describe('sign up user', () => {
     }
 
     it('should create a user', async () => {
-        const signUp = await signUpUser(user)
-        expect(signUp).toHaveProperty('code')
+        expect(await signUpUser(user)).toHaveProperty('code')
     })
     const userNoPassword: userType = {
         email: 'flor002@mundo.com',
@@ -105,18 +105,46 @@ describe('sign up user', () => {
     })
 })
 
-describe('sign out user', () => {
-    const userToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+// Test sign in
+describe('sign in user', () => {
+    const user: userTypeLogin = {
+        email: 'flor002@mundo.com',
+        password: 'hola',
+    }
 
-    it('should log out a user', async () => {
-        const singout = await signOutUser(userToken)
-        expect(singout.result).toEqual(true)
+    it('should generate a token', async () => {
+        const userLogged = await signInUser(user)
+        console.log(userLogged)
+        expect(typeof userLogged.result).toBe('string')
     })
-    it('should throw an error if the token is corrupted', async () => {
-        await expect(
-            signOutUser(userToken.substring(0, 4))
-        ).rejects.toThrowError(ErrorHandler)
+
+    const userNoInfo: userTypeLogin = {
+        email: '',
+        password: '',
+    }
+    it('should throw an error if there are not email nor password', async () => {
+        await expect(signInUser(userNoInfo)).rejects.toThrowError(ErrorHandler)
+    })
+
+    const userWrongEmail: userTypeLogin = {
+        email: 'flor11111@mundo.com',
+        password: 'hola',
+    }
+    it('should throw an error if the email is wrong', async () => {
+        await expect(signInUser(userWrongEmail)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+
+    const userWrongPassword: userTypeLogin = {
+        email: 'flor002@mundo.com',
+        password: 'chau',
+    }
+
+    it('should throw an error if the password is wrong', async () => {
+        await expect(signInUser(userWrongPassword)).rejects.toThrowError(
+            ErrorHandler
+        )
     })
 })
 
@@ -138,6 +166,20 @@ const clearDatabase = async function () {
         await prisma.$disconnect()
     }
 }
+
+describe('sign out user', () => {
+    const userToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+    it('should log out a user', async () => {
+        const singout = await signOutUser(userToken)
+        expect(singout.result).toEqual(true)
+    })
+    it('should throw an error if the token is corrupted', async () => {
+        await expect(
+            signOutUser(userToken.substring(0, 4))
+        ).rejects.toThrowError(ErrorHandler)
+    })
+})
 
 afterAll(async () => {
     await clearDatabase()

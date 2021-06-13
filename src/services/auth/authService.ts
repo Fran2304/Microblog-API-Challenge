@@ -1,6 +1,11 @@
 /* eslint-disable no-undef */
 import { PrismaClient } from '@prisma/client'
-import { confirmationType, tokenPayload, userType } from '../../type/types'
+import {
+    confirmationType,
+    tokenPayload,
+    userType,
+    userTypeLogin,
+} from '../../type/types'
 import { ErrorHandler } from '../../errorHandler/errorHandler'
 import { plainToClass } from 'class-transformer'
 import { UserDto } from '../../Dtos/userDto'
@@ -121,7 +126,7 @@ export const signUpUser = async (params: userType) => {
     }
 }
 
-export const signInUser = async (params: userType) => {
+export const signInUser = async (params: userTypeLogin) => {
     try {
         if (!params.email || !params.password) {
             throw new Error('need email and password')

@@ -7,6 +7,7 @@ import {
     generatePassword,
     newToken,
     signUpUser,
+    signOutUser,
     signInUser,
     verifyToken,
 } from '../services/auth/authService'
@@ -117,8 +118,6 @@ describe('sign in user', () => {
         expect(typeof userLogged.result).toBe('string')
     })
 
-    // Error 1
-
     const userNoInfo: userTypeLogin = {
         email: '',
         password: '',
@@ -167,6 +166,20 @@ const clearDatabase = async function () {
         await prisma.$disconnect()
     }
 }
+
+describe('sign out user', () => {
+    const userToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+    it('should log out a user', async () => {
+        const singout = await signOutUser(userToken)
+        expect(singout.result).toEqual(true)
+    })
+    it('should throw an error if the token is corrupted', async () => {
+        await expect(
+            signOutUser(userToken.substring(0, 4))
+        ).rejects.toThrowError(ErrorHandler)
+    })
+})
 
 afterAll(async () => {
     await clearDatabase()

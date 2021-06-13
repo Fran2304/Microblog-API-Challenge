@@ -7,7 +7,6 @@ import { UserDto } from '../../Dtos/userDto'
 import { generateHash } from '../../Helpers/createHashHelper'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { sendMailOfConfirmationCode } from '../../Helpers/emailSender'
 import { isNumber, reject } from 'lodash'
 
 const prisma = new PrismaClient()
@@ -75,17 +74,30 @@ export const checkPassword = (
 
 export const signUpUser = async (params: userType) => {
     try {
-        const userRead = await prisma.user.findUnique({
+        if (
+            !params.email ||
+            !params.firstName ||
+            !params.lastName ||
+            !params.nickname ||
+            !params.password
+        ) {
+            throw new Error('ERROR: Fields cant not be empty')
+        }
+        let userRead = await prisma.user.findUnique({
             where: {
                 email: params.email,
             },
         })
         if (userRead != null) {
-            throw new ErrorHandler(
-                'ERROR: the email is already registered',
-                409,
-                'ERROR: the email is already registered'
-            )
+            throw new Error('ERROR: the email is already registered')
+        }
+        userRead = await prisma.user.findUnique({
+            where: {
+                nickname: params.nickname,
+            },
+        })
+        if (userRead != null) {
+            throw new Error('ERROR: the nickname is already registered')
         }
         const passwordHashed = await generatePassword(params.password)
         const confirmationCode = generateHash()
@@ -96,11 +108,14 @@ export const signUpUser = async (params: userType) => {
                 hashActivation: confirmationCode,
             },
         })
-        if (createdUser) {
-            sendMailOfConfirmationCode(createdUser.email, confirmationCode)
+        if (!createdUser) {
+            throw new Error('ERROR: cant create user')
         }
-
-        return { result: plainToClass(UserDto, createdUser), status: 201 }
+        return {
+            result: plainToClass(UserDto, createdUser),
+            code: confirmationCode,
+            status: 201,
+        }
     } catch (e) {
         console.log(e)
         throw new ErrorHandler(e.message, e.status ?? 404, e)

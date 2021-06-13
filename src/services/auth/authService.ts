@@ -12,7 +12,16 @@ import { isNumber, reject } from 'lodash'
 
 const prisma = new PrismaClient()
 
-const generatePassword = async (plainTextPassword: string): Promise<string> => {
+export const generatePassword = async (
+    plainTextPassword: string
+): Promise<string> => {
+    if (!plainTextPassword) {
+        throw new ErrorHandler(
+            'ERROR: password is empty',
+            409,
+            'ERROR: password is empty'
+        )
+    }
     return new Promise((resolve) => {
         bcrypt.hash(plainTextPassword, 8, (err, hash) => {
             if (err) {

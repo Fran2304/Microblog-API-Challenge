@@ -10,6 +10,7 @@ import {
     signOutUser,
     signInUser,
     verifyToken,
+    protect,
 } from '../services/auth/authService'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { userType, userTypeLogin } from '../type/types'
@@ -105,7 +106,6 @@ describe('sign up user', () => {
     })
 })
 
-// Test sign in
 describe('sign in user', () => {
     const user: userTypeLogin = {
         email: 'flor002@mundo.com',
@@ -148,6 +148,40 @@ describe('sign in user', () => {
     })
 })
 
+describe('protect', () => {
+    const userTokenEmpty = ''
+
+    it('should throw error if the token is empty', async () => {
+        await expect(protect(userTokenEmpty)).rejects.toThrowError(Error)
+    })
+
+    const userTokenWrong = 'vbmkmkfgmkxcmvvnfjgnujnhjfngv'
+    it('should throw error if the token is wrong', async () => {
+        await expect(protect(userTokenWrong)).rejects.toThrowError(Error)
+    })
+
+    const userToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+    it('should allow login', async () => {
+        const protectUser = await protect(userToken)
+        expect(protectUser.result).toBe(1)
+    })
+})
+
+describe('sign out user', () => {
+    const userToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
+    it('should log out a user', async () => {
+        const singout = await signOutUser(userToken)
+        expect(singout.result).toEqual(true)
+    })
+    it('should throw an error if the token is corrupted', async () => {
+        await expect(
+            signOutUser(userToken.substring(0, 4))
+        ).rejects.toThrowError(ErrorHandler)
+    })
+})
+
 const clearDatabase = async function () {
     const tableNames = ['Comment', 'Post', 'User']
     try {
@@ -166,20 +200,6 @@ const clearDatabase = async function () {
         await prisma.$disconnect()
     }
 }
-
-describe('sign out user', () => {
-    const userToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIzNTYyNjczLCJleHAiOjE2MjM1ODA2NzN9.UHSwy-JqqWaQwm_3bQCWBx0f1hZ5-V9b-98PROGH_yQ'
-    it('should log out a user', async () => {
-        const singout = await signOutUser(userToken)
-        expect(singout.result).toEqual(true)
-    })
-    it('should throw an error if the token is corrupted', async () => {
-        await expect(
-            signOutUser(userToken.substring(0, 4))
-        ).rejects.toThrowError(ErrorHandler)
-    })
-})
 
 afterAll(async () => {
     await clearDatabase()

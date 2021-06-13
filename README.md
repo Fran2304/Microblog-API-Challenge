@@ -21,7 +21,7 @@ Instructions for the test:
 
 1. Create a .env.test file and add the variables defined in the .env.example
 2. run the command > prisma:migrate:test
-3. run the command > npm run test
+3. run the command > npm run test:coverage
 
 About the paths:
 /signout: Log out the user

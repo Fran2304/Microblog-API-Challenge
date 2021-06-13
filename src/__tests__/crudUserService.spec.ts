@@ -1,28 +1,142 @@
 /* eslint-disable no-undef */
-// import * as request from 'supertest'
-// import { PrismaClient } from '@prisma/client'
-// import express from 'express'
-// import { app } from '../../server'
-// import { readComment } from '../services/comments/crudCommentService'
-// const prisma = new PrismaClient()
 
-// beforeEach(async () => {
-//     await prisma.comment.deleteMany({})
-//     await prisma.post.deleteMany({})
-//     await prisma.user.deleteMany({})
-// })
+import { PrismaClient } from '@prisma/client'
+import { ErrorHandler } from '../errorHandler/errorHandler'
 
-// const exampleUser = {
-//     email: 'spiderman@gmail.com',
-//     nickname: 'parker',
-//     firstName: 'Micaela',
-//     lastName: 'Rojas',
-//     password: '12345',
-//     hashActivation: '222222222',
-// }
+import {
+    readUserService,
+    updateUserService,
+} from './../services/users/crudUserService'
 
-// describe('creat a new user', () => {
-//     it('should return a lowercase string  if we pass capital letters', async () => {
-//         console.log('welcome')
-//     })
-// })
+const prisma = new PrismaClient()
+
+beforeAll(async () => {
+    await prisma.user.createMany({
+        data: [
+            {
+                email: 'flor@mundo.com',
+                nickname: 'mariposa',
+                firstName: 'Ana',
+                lastName: 'Zevallos',
+                visibleEmail: true,
+                visibleName: true,
+                password: 'contrasena123',
+                emailVerified: true,
+                bio: 'estoy feliz de la vida',
+                hashActivation: 'caracteresaleatorios1',
+            },
+            {
+                email: 'rocio@mundo.com',
+                nickname: 'corazon',
+                firstName: 'rocio',
+                lastName: 'Sanqui',
+                visibleEmail: false,
+                visibleName: false,
+                password: 'contrasena456',
+                emailVerified: false,
+                bio: 'me gustan los chocolates',
+                hashActivation: 'caracteresaleatorios2',
+            },
+        ],
+    })
+    console.log('users created')
+})
+
+describe('read a user', () => {
+    it('should get a user', async () => {
+        const postCreated = await readUserService(1)
+        expect(postCreated.result).toHaveProperty('nickname', 'mariposa')
+    })
+    it('should return an error if the user does not exist', async () => {
+        await expect(readUserService(100)).rejects.toThrowError(ErrorHandler)
+    })
+    it('should show the email if it is visible', async () => {
+        const postCreated = await readUserService(1)
+        expect(postCreated.result).toHaveProperty('email', 'flor@mundo.com')
+    })
+    it('should not return the email if it is not visible', async () => {
+        const postCreated = await readUserService(2)
+        expect(postCreated.result).toHaveProperty('email', '')
+    })
+    it('should show the name and lastname if it is visible', async () => {
+        const postCreated = await readUserService(1)
+        expect(postCreated.result).toHaveProperty('firstName', 'Ana')
+        expect(postCreated.result).toHaveProperty('lastName', 'Zevallos')
+    })
+
+    it('should not return firstName and lastName if it is not visible', async () => {
+        const postCreated = await readUserService(2)
+        expect(postCreated.result).toHaveProperty('firstName', '')
+        expect(postCreated.result).toHaveProperty('lastName', '')
+    })
+})
+
+const nothingToUpdate = {
+    firstName: '',
+    lastName: '',
+    nickname: '',
+    bio: '',
+}
+
+const infoToUpdate = {
+    firstName: 'Maria',
+    lastName: 'arteaga',
+    visibleEmail: true,
+    visibleName: true,
+    nickname: 'sylormoon',
+    bio: 'que felicidad',
+}
+
+const nicknameRepeated = {
+    nickname: 'mariposa',
+}
+
+describe('update user', () => {
+    it('should return an error if the user does not exist', async () => {
+        await expect(updateUserService(100, infoToUpdate)).rejects.toThrowError(
+            ErrorHandler
+        )
+    })
+    it('should return an error if we dont pass anything to update', async () => {
+        await expect(
+            updateUserService(1, nothingToUpdate)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+    it('should return an error if we pass a repeated nickname', async () => {
+        await expect(
+            updateUserService(1, nicknameRepeated)
+        ).rejects.toThrowError(ErrorHandler)
+    })
+    it('should update fields of the user', async () => {
+        const updated = await updateUserService(1, infoToUpdate)
+        expect(updated.result).toHaveProperty('firstName', 'Maria')
+    })
+})
+
+const clearDatabase = async function () {
+    const tableNames = ['Comment', 'Post', 'User']
+    try {
+        for (const tableName of tableNames) {
+            await prisma.$queryRaw(`DELETE FROM "${tableName}";`)
+            if (!['Store'].includes(tableName)) {
+                await prisma.$queryRaw(
+                    `ALTER SEQUENCE "${tableName}_id_seq" RESTART WITH 1;`
+                )
+            }
+        }
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err)
+    } finally {
+        await prisma.$disconnect()
+    }
+}
+
+afterAll(async () => {
+    await clearDatabase()
+    const deleteComment = prisma.comment.deleteMany()
+    const deletePost = prisma.post.deleteMany()
+    const deleteUserDetails = prisma.user.deleteMany()
+    await prisma.$transaction([deleteUserDetails, deletePost, deleteComment])
+    // await prisma.$disconnect()
+})
